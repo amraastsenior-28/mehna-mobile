@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MEHNA</string>
+    <string name="title_activity_main">MEHNA</string>
+    <string name="package_name">com.mehna.aswan</string>
+    <string name="custom_url_scheme">com.mehna.aswan</string>
+</resources>

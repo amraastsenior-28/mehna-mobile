@@ -1,0 +1,31 @@
+{
+  "name": "MEHNA | مهنة — المنصة الذكية للتعلم القائم على العمل",
+  "short_name": "مهنة MEHNA",
+  "description": "منصة وطنية ثلاثية الأطراف للتعلم القائم على العمل بمحافظة أسوان",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F0E6",
+  "theme_color": "#0E3B33",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
