@@ -69,15 +69,15 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
       <div className="relative w-full max-w-[min(960px,70vw)] flex flex-col items-center justify-center">
         {useFallbackPoster ? (
           <img
-            src="/desktop_intro_poster.jpg"
+            src={`${import.meta.env.BASE_URL}desktop_intro_poster.jpg`}
             alt={language === 'ar' ? 'شعار منصة مهنة' : 'MEHNA Platform Logo'}
             className="w-full h-auto max-h-[85vh] object-contain select-none pointer-events-none"
           />
         ) : (
           <video
             ref={videoRef}
-            src="/desktop_intro.webm"
-            poster="/desktop_intro_poster.jpg"
+            src={`${import.meta.env.BASE_URL}desktop_intro.webm`}
+            poster={`${import.meta.env.BASE_URL}desktop_intro_poster.jpg`}
             autoPlay
             muted
             playsInline

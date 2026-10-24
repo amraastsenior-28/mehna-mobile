@@ -9,7 +9,7 @@ export const BrandLogo: React.FC<LogoProps> = ({ className = 'h-12' }) => {
     <div className={`flex items-center gap-3 ${className}`}>
       {/* Brand image from project assets */}
       <img
-        src="/mehna-logo.jpg"
+        src={`${import.meta.env.BASE_URL}mehna-logo.jpg`}
         alt="MEHNA Logo - مهنة"
         className="h-12 w-12 rounded-lg object-contain shadow-sm border border-[#C4824A]/30 bg-white"
         onError={(e) => {

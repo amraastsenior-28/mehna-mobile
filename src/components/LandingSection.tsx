@@ -102,7 +102,7 @@ export const LandingSection: React.FC<LandingSectionProps> = ({ language, setAct
             {/* Visual Header Image Container with Floating Badge */}
             <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-[#0E3B33]/5">
               <img
-                src="/images/card-youth-portal.jpg"
+                src={`${import.meta.env.BASE_URL}images/card-youth-portal.jpg`}
                 alt={isAr ? 'بوابة الشباب والمتدربين' : 'Youth Portal App'}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -153,7 +153,7 @@ export const LandingSection: React.FC<LandingSectionProps> = ({ language, setAct
             {/* Visual Header Image Container with Floating Badge */}
             <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-[#0E3B33]/5">
               <img
-                src="/images/card-employer-console.jpg"
+                src={`${import.meta.env.BASE_URL}images/card-employer-console.jpg`}
                 alt={isAr ? 'منصة أصحاب الأعمال' : 'Employer Console'}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -204,7 +204,7 @@ export const LandingSection: React.FC<LandingSectionProps> = ({ language, setAct
             {/* Visual Header Image Container with Floating Badge */}
             <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-[#0E3B33]/5">
               <img
-                src="/images/card-b2g-dashboard.jpg"
+                src={`${import.meta.env.BASE_URL}images/card-b2g-dashboard.jpg`}
                 alt={isAr ? 'لوحة الرقابة الحكومية' : 'B2G Oversight Dashboard'}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
