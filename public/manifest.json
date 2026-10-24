@@ -11,23 +11,23 @@
   "lang": "ar",
   "icons": [
     {
-      "src": "demo-icon-192.png",
+      "src": "emblem-demo-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "demo-icon-512.png",
+      "src": "emblem-demo-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "demo-icon-1024.png",
+      "src": "emblem-demo-1024.png",
       "sizes": "1024x1024",
       "type": "image/png"
     },
     {
-      "src": "demo-icon-180.png",
+      "src": "emblem-demo-180.png",
       "sizes": "180x180",
       "type": "image/png"
     }
