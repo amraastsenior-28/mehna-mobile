@@ -23,7 +23,7 @@ export function App() {
   }, [language]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F0E6] text-[#0E3B33] font-arabic antialiased selection:bg-[#C4824A] selection:text-white">
+    <div className={`min-h-screen flex flex-col ${isLoading ? 'bg-[#EBE3D3]' : 'bg-[#F4F0E6]'} text-[#0E3B33] font-arabic antialiased selection:bg-[#C4824A] selection:text-white`}>
       {/* Intro Desktop Loading Overlay */}
       {isLoading && (
         <LoadingScreen

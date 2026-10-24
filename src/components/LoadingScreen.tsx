@@ -76,23 +76,41 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
       role="status"
       aria-live="polite"
       aria-label={language === 'ar' ? 'جاري تحميل منصة مهنة' : 'Loading MEHNA platform'}
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#F4F0E6] transition-opacity duration-400 ease-out select-none px-4 ${
+      style={{
+        position: 'fixed',
+        inset: 0,
+        width: '100vw',
+        height: '100dvh',
+        zIndex: 9999,
+        backgroundColor: '#EBE3D3',
+      }}
+      className={`flex flex-col items-center justify-center transition-opacity duration-400 ease-out select-none overflow-hidden ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
       {/* 
-        MEHNA Loader & Splash Presentation:
-        - Centered on cream (#F4F0E6) background
-        - Rendered at 40% of screen width (clamped responsibly on small/large displays)
-        - Preserves strict emblem aspect ratio (0.73 : 1) with 25% clear space
+        Safe area content wrapper:
+        Padding handles top status bar and bottom navigation bar insets,
+        keeping the emblem vertically centered in the middle third of the viewport.
       */}
-      <div className="relative w-[40vw] max-w-[480px] min-w-[220px] flex flex-col items-center justify-center p-6">
+      <div
+        className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingRight: 'env(safe-area-inset-right, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
+        }}
+      >
         {useFallbackPoster ? (
           <img
             src={`${import.meta.env.BASE_URL}emblem-demo-512.png`}
             alt={language === 'ar' ? 'شعار منصة مهنة' : 'MEHNA Emblem'}
-            className="w-full h-auto object-contain select-none pointer-events-none"
-            style={{ aspectRatio: '0.73 / 1' }}
+            className="w-full h-full object-contain select-none pointer-events-none p-6"
+            style={{
+              maxHeight: '60dvh',
+              maxWidth: '85vw',
+            }}
           />
         ) : (
           <video
@@ -104,8 +122,12 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
             playsInline
             onEnded={handleVideoEnd}
             onError={handleFallback}
-            className="w-full h-auto object-contain select-none pointer-events-none bg-transparent"
-            style={{ aspectRatio: '0.73 / 1' }}
+            className="w-full h-full object-cover select-none pointer-events-none bg-transparent"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
           />
         )}
       </div>
