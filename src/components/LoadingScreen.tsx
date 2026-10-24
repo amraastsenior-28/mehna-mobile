@@ -10,7 +10,21 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
   const [useFallbackPoster, setUseFallbackPoster] = useState<boolean>(false);
+  const [isMobileScreen, setIsMobileScreen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Transition out over 400ms after the presentation is complete
   const handleTransitionOut = () => {
@@ -66,24 +80,28 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      <div className="relative w-full max-w-[min(960px,70vw)] flex flex-col items-center justify-center">
+      <div className={`relative w-full flex flex-col items-center justify-center ${
+        isMobileScreen ? 'max-w-[92vw] h-full justify-center' : 'max-w-[min(960px,70vw)]'
+      }`}>
         {useFallbackPoster ? (
           <img
-            src={`${import.meta.env.BASE_URL}desktop_intro_poster.jpg`}
+            src={`${import.meta.env.BASE_URL}${isMobileScreen ? 'mobile_intro_poster.jpg' : 'desktop_intro_poster.jpg'}`}
             alt={language === 'ar' ? 'شعار منصة مهنة' : 'MEHNA Platform Logo'}
             className="w-full h-auto max-h-[85vh] object-contain select-none pointer-events-none"
           />
         ) : (
           <video
             ref={videoRef}
-            src={`${import.meta.env.BASE_URL}desktop_intro.webm`}
-            poster={`${import.meta.env.BASE_URL}desktop_intro_poster.jpg`}
+            src={`${import.meta.env.BASE_URL}${isMobileScreen ? 'mobile_intro.webm' : 'desktop_intro.webm'}`}
+            poster={`${import.meta.env.BASE_URL}${isMobileScreen ? 'mobile_intro_poster.jpg' : 'desktop_intro_poster.jpg'}`}
             autoPlay
             muted
             playsInline
             onEnded={handleVideoEnd}
             onError={handleFallback}
-            className="w-full h-auto max-h-[85vh] object-contain select-none pointer-events-none bg-transparent"
+            className={`w-full select-none pointer-events-none bg-transparent ${
+              isMobileScreen ? 'h-auto max-h-[90vh] object-contain scale-110' : 'h-auto max-h-[85vh] object-contain'
+            }`}
           />
         )}
       </div>

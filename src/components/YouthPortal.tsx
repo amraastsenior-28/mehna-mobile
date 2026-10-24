@@ -76,14 +76,14 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({ language, matchingWeig
         Smartphone Component Frame with Hover and Press Animation
       */}
       <div
-        className="w-full max-w-[395px] h-[780px] max-h-[86vh] max-[430px]:max-w-none max-[430px]:h-auto max-[430px]:max-h-none max-[430px]:rounded-none max-[430px]:p-0 max-[430px]:border-0 max-[430px]:shadow-none bg-[#111111] p-[10px] rounded-[48px] border-[2.5px] border-[#222825] flex flex-col phone-frame-motion"
+        className="w-full max-w-[395px] h-[780px] max-h-[86vh] md:max-w-[395px] md:h-[780px] md:max-h-[86vh] max-md:max-w-none max-md:h-auto max-md:max-h-none max-md:rounded-none max-md:p-0 max-md:border-0 max-md:shadow-none bg-[#111111] p-[10px] rounded-[48px] border-[2.5px] border-[#222825] flex flex-col phone-frame-motion"
       >
         {/* Inner Phone Screen Container */}
-        <div className="relative w-full h-full bg-[#F4F0E6] rounded-[38px] max-[430px]:rounded-none overflow-hidden flex flex-col">
+        <div className="relative w-full h-full bg-[#F4F0E6] rounded-[38px] max-md:rounded-none overflow-hidden flex flex-col max-md:overflow-visible">
           
           {/* Status Bar with Dynamic Island (Western Numerals 9:41, Signal & Battery) */}
           <div
-            className="w-full bg-[#0E3B33] text-white px-5 pt-3 pb-1.5 flex items-center justify-between z-30 select-none shrink-0 max-[430px]:hidden"
+            className="w-full bg-[#0E3B33] text-white px-5 pt-3 pb-1.5 flex items-center justify-between z-30 select-none shrink-0 max-md:hidden"
             dir="ltr"
           >
             {/* Clock in Western Numerals */}
@@ -104,8 +104,8 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({ language, matchingWeig
             </div>
           </div>
 
-          {/* Internally Scrollable Youth Portal Content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          {/* Internally Scrollable Youth Portal Content on Desktop, Natural Page Scrolling on Mobile */}
+          <div className="flex-1 md:overflow-y-auto md:overscroll-contain -webkit-overflow-scrolling-touch touch-pan-y">
             {/* Mobile Top App Header */}
             <div className="bg-[#0E3B33] text-white p-5 space-y-3.5">
               <div className="flex items-center justify-between">
@@ -390,7 +390,7 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({ language, matchingWeig
           </div>
 
           {/* Bottom Home Indicator Bar on Phone */}
-          <div className="w-full bg-[#F4F0E6] py-1.5 flex justify-center items-center shrink-0 border-t border-[#0E3B33]/5 max-[430px]:hidden">
+          <div className="w-full bg-[#F4F0E6] py-1.5 flex justify-center items-center shrink-0 border-t border-[#0E3B33]/5 max-md:hidden">
             <div className="w-32 h-1 bg-neutral-400/60 rounded-full"></div>
           </div>
         </div>

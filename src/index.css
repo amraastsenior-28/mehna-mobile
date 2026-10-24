@@ -73,7 +73,7 @@
   }
 }
 
-@media (max-width: 430px) {
+@media (max-width: 768px) {
   .phone-frame-motion {
     box-shadow: none !important;
   }
@@ -85,7 +85,7 @@
       }
     }
     .phone-frame-motion:active {
-      transform: scale(0.99) !important;
+      transform: none !important;
     }
   }
 }
