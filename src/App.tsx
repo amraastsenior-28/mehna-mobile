@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Navbar } from './components/Navbar';
 import type { PortalTab, Language } from './components/Navbar';
 import { LandingSection } from './components/LandingSection';
@@ -11,7 +12,8 @@ import { DEFAULT_MATCHING_WEIGHTS } from './utils/matchingEngine';
 import type { MatchingWeights } from './utils/matchingEngine';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<PortalTab>('landing');
+  const isNative = Capacitor.isNativePlatform();
+  const [activeTab, setActiveTab] = useState<PortalTab>(isNative ? 'youth' : 'landing');
   const [language, setLanguage] = useState<Language>('ar');
   const [matchingWeights, setMatchingWeights] = useState<MatchingWeights>(DEFAULT_MATCHING_WEIGHTS);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -24,7 +26,7 @@ export function App() {
 
   return (
     <div className={`min-h-screen flex flex-col ${isLoading ? 'bg-[#EBE3D3]' : 'bg-[#F4F0E6]'} text-[#0E3B33] font-arabic antialiased selection:bg-[#C4824A] selection:text-white`}>
-      {/* Intro Desktop Loading Overlay */}
+      {/* Intro Desktop & Mobile Loading Overlay */}
       {isLoading && (
         <LoadingScreen
           language={language}
@@ -32,26 +34,28 @@ export function App() {
         />
       )}
 
-      {/* Navigation Header */}
-      <div
-        aria-hidden={isLoading}
-        hidden={isLoading}
-        style={isLoading ? { display: 'none' } : undefined}
-      >
-        <Navbar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          language={language}
-          setLanguage={setLanguage}
-        />
-      </div>
+      {/* Navigation Header (hidden on native Android mobile app) */}
+      {!isNative && (
+        <div
+          aria-hidden={isLoading}
+          hidden={isLoading}
+          style={isLoading ? { display: 'none' } : undefined}
+        >
+          <Navbar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            language={language}
+            setLanguage={setLanguage}
+          />
+        </div>
+      )}
 
       {/* Main Body */}
       <main
         aria-hidden={isLoading}
         hidden={isLoading}
         style={isLoading ? { display: 'none' } : undefined}
-        className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+        className={isNative ? 'flex-1 w-full h-full p-0 m-0' : 'flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'}
       >
         {activeTab === 'landing' && (
           <LandingSection language={language} setActiveTab={setActiveTab} />
@@ -74,14 +78,16 @@ export function App() {
         )}
       </main>
 
-      {/* Persistent Footer */}
-      <div
-        aria-hidden={isLoading}
-        hidden={isLoading}
-        style={isLoading ? { display: 'none' } : undefined}
-      >
-        <Footer language={language} />
-      </div>
+      {/* Persistent Footer (hidden on native Android mobile app) */}
+      {!isNative && (
+        <div
+          aria-hidden={isLoading}
+          hidden={isLoading}
+          style={isLoading ? { display: 'none' } : undefined}
+        >
+          <Footer language={language} />
+        </div>
+      )}
     </div>
   );
 }

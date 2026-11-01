@@ -20,17 +20,164 @@
   --shadow-device-hover: 0 32px 56px rgba(14, 59, 51, 0.18);
 }
 
+/* 
+  MEHNA UI Spec v2 Color Tokens & System Foundations
+  Light & Dark mode variable architecture supporting prefers-color-scheme & explicit toggle
+*/
 :root {
-  --color-primary: #0E3B33;
-  --color-accent: #C4824A;
-  --color-bg: #F4F0E6;
+  --theme-bg: #F4F0E6;
+  --theme-surface: #FFFDF8;
+  --theme-border: #E4DBCB;
+  --theme-text: #14201C;
+  --theme-text-muted: #5B6661;
+  --theme-primary: #0E3B33;
+  --theme-on-primary: #FFFDF8;
+  --theme-accent: #C4824A;
+  --theme-accent-ink: #8A4F22;
+  --theme-success: #1F6B4F;
+  --theme-warning: #9A5B12;
+
+  --glass-bg: rgba(255, 253, 248, 0.72);
+  --glass-border: rgba(228, 219, 203, 0.6);
+  --skeleton-base: #E9E2D3;
+  --skeleton-highlight: #F7F3EA;
+
   --shadow-card: 0 8px 24px rgba(14, 59, 51, 0.08);
   --shadow-card-hover: 0 12px 32px rgba(14, 59, 51, 0.12);
 }
 
+.dark, [data-theme="dark"] {
+  --theme-bg: #0A1F1B;
+  --theme-surface: #112B25;
+  --theme-border: #1F3D36;
+  --theme-text: #F4F0E6;
+  --theme-text-muted: #A9B5AF;
+  --theme-primary: #3C9A80;
+  --theme-on-primary: #0A1F1B;
+  --theme-accent: #E0A86A;
+  --theme-accent-ink: #E0A86A;
+  --theme-success: #7FD1B0;
+  --theme-warning: #F2C27A;
+
+  --glass-bg: rgba(17, 43, 37, 0.65);
+  --glass-border: rgba(31, 61, 54, 0.6);
+  --skeleton-base: #1A3832;
+  --skeleton-highlight: #244A42;
+
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Glass navigation bar and sheet styles with solid fallback */
+.mehna-glass-bar {
+  background-color: var(--theme-surface);
+}
+
+@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
+  .mehna-glass-bar {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .mehna-glass-bar {
+    background-color: var(--theme-surface) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* 
+  Shimmer Loading Sweep (Spec Section 4)
+  Base to highlight linear sweep across 1.4s, infinite.
+  Reduced motion displays static skeleton without sweep.
+*/
+@keyframes shimmerSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerSweep 1.4s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-skeleton {
+    animation: none !important;
+    background: var(--skeleton-base) !important;
+  }
+}
+
+/* 
+  Staggered List Animation (Spec Section 5)
+  First 8 items translateY 12px -> 0 and opacity 0 -> 1 over 280ms cubic-bezier(0.22, 1, 0.36, 1).
+*/
+@keyframes staggerFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  animation: staggerFadeInUp 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-item {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* 
+  Tab Transition (Spec Section 3)
+  Cross-fade with 8px slide over 220ms ease-out
+*/
+@keyframes tabSlideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(var(--tab-slide-offset, 8px));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tab-transition-active {
+  animation: tabSlideFadeIn 220ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-transition-active {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Green-tinted shadows utility classes */
 .shadow-card {
-  box-shadow: 0 8px 24px rgba(14, 59, 51, 0.08);
+  box-shadow: var(--shadow-card);
 }
 
 .shadow-card-hover {
@@ -38,7 +185,7 @@
 }
 
 .shadow-card-hover:hover {
-  box-shadow: 0 12px 32px rgba(14, 59, 51, 0.12);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* 
