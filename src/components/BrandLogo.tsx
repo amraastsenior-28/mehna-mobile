@@ -27,11 +27,11 @@ export const BrandLogo: React.FC<LogoProps> = ({ className = '', showWordmark = 
       {showWordmark && (
         <div className="flex flex-col text-start justify-center">
           {/* Arabic wordmark element: sized at ~45% of emblem width scale, Cairo font */}
-          <span className="font-extrabold text-[22px] tracking-tight leading-none text-[#0E3B33] font-arabic">
+          <span className="font-extrabold text-[22px] tracking-tight leading-none text-[var(--theme-primary)] font-arabic">
             مِـهْـنَـة
           </span>
           {/* Latin wordmark element: beneath Arabic at 8% height gap, widely spaced serif capitals */}
-          <span className="text-[10px] font-bold tracking-[0.28em] text-[#C4824A] font-brand uppercase mt-1">
+          <span className="text-[10px] font-bold tracking-[0.28em] text-[var(--theme-accent)] font-brand uppercase mt-1">
             M E H N A
           </span>
         </div>

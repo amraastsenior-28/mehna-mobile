@@ -79,11 +79,20 @@ export const GlassBottomNav: React.FC<GlassBottomNavProps> = ({
                 />
               </div>
 
-              {/* Text label with legible contrast and minimal layout shift */}
+              {/* Text label with calibrated contrast */}
               <span
                 className={`text-[11px] leading-tight mt-0.5 tracking-tight transition-all duration-200 ${
                   isActive ? 'font-black scale-105' : 'font-medium'
                 }`}
+                style={{
+                  color: isActive
+                    ? isDark
+                      ? '#7FD1B0'
+                      : '#0E3B33'
+                    : isDark
+                    ? '#B6C2BC'
+                    : '#5B6661',
+                }}
               >
                 {label}
               </span>

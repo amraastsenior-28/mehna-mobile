@@ -13,7 +13,34 @@ import type { MatchingWeights } from './utils/matchingEngine';
 
 export function App() {
   const isNative = Capacitor.isNativePlatform();
-  const [activeTab, setActiveTab] = useState<PortalTab>(isNative ? 'youth' : 'landing');
+  const [isMobileScreen, setIsMobileScreen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getInitialTab = (): PortalTab => {
+    if (isNative) return 'youth';
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab') as PortalTab;
+      if (tabParam && ['landing', 'youth', 'employer', 'b2g'].includes(tabParam)) {
+        return tabParam;
+      }
+      if (window.location.hash === '#youth') return 'youth';
+    }
+    return 'landing';
+  };
+  const [activeTab, setActiveTab] = useState<PortalTab>(getInitialTab);
   const [language, setLanguage] = useState<Language>('ar');
   const [matchingWeights, setMatchingWeights] = useState<MatchingWeights>(DEFAULT_MATCHING_WEIGHTS);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -24,8 +51,11 @@ export function App() {
     document.documentElement.lang = language;
   }, [language]);
 
+  // When on native mobile app or small screen viewing youth app, isolate into standalone mobile mode
+  const isStandaloneApp = isNative || (isMobileScreen && activeTab === 'youth');
+
   return (
-    <div className={`min-h-screen flex flex-col ${isLoading ? 'bg-[#EBE3D3]' : 'bg-[#F4F0E6]'} text-[#0E3B33] font-arabic antialiased selection:bg-[#C4824A] selection:text-white`}>
+    <div className={`min-h-screen flex flex-col ${isLoading ? 'bg-[#EBE3D3]' : isStandaloneApp ? 'bg-[var(--theme-bg)]' : 'bg-[#F4F0E6]'} text-[#0E3B33] font-arabic antialiased selection:bg-[#C4824A] selection:text-white`}>
       {/* Intro Desktop & Mobile Loading Overlay */}
       {isLoading && (
         <LoadingScreen
@@ -34,8 +64,8 @@ export function App() {
         />
       )}
 
-      {/* Navigation Header (hidden on native Android mobile app) */}
-      {!isNative && (
+      {/* Navigation Header (hidden when running in standalone mobile app mode) */}
+      {!isStandaloneApp && (
         <div
           aria-hidden={isLoading}
           hidden={isLoading}
@@ -55,7 +85,7 @@ export function App() {
         aria-hidden={isLoading}
         hidden={isLoading}
         style={isLoading ? { display: 'none' } : undefined}
-        className={isNative ? 'flex-1 w-full h-full p-0 m-0' : 'flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'}
+        className={isStandaloneApp ? 'flex-1 w-full h-full p-0 m-0 overflow-hidden' : 'flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'}
       >
         {activeTab === 'landing' && (
           <LandingSection language={language} setActiveTab={setActiveTab} />
@@ -78,8 +108,8 @@ export function App() {
         )}
       </main>
 
-      {/* Persistent Footer (hidden on native Android mobile app) */}
-      {!isNative && (
+      {/* Persistent Footer (hidden when running in standalone mobile app mode) */}
+      {!isStandaloneApp && (
         <div
           aria-hidden={isLoading}
           hidden={isLoading}

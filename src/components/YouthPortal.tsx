@@ -186,7 +186,7 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
 
   return (
     <div
-      className="w-full flex justify-center items-center py-2 sm:py-6"
+      className="w-full flex justify-center items-center py-2 sm:py-6 max-md:py-0 max-md:h-screen max-md:w-screen"
       style={{
         '--tab-slide-offset': `${tabSlideOffset}px`,
       } as React.CSSProperties}
@@ -194,7 +194,7 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
       {/* 
         Smartphone Frame on Desktop, Edge-to-edge Native View on Mobile
       */}
-      <div className="w-full max-w-[395px] h-[780px] max-h-[86vh] md:max-w-[395px] md:h-[780px] md:max-h-[86vh] max-md:max-w-none max-md:h-screen max-md:max-h-none max-md:rounded-none max-md:p-0 max-md:border-0 max-md:shadow-none bg-[#111111] p-[10px] rounded-[48px] border-[2.5px] border-[#222825] flex flex-col phone-frame-motion">
+      <div className="w-full max-w-[395px] h-[780px] max-h-[86vh] md:max-w-[395px] md:h-[780px] md:max-h-[86vh] max-md:max-w-none max-md:w-full max-md:h-screen max-md:max-h-none max-md:rounded-none max-md:p-0 max-md:border-0 max-md:shadow-none bg-[#111111] max-md:bg-transparent p-[10px] rounded-[48px] border-[2.5px] border-[#222825] flex flex-col phone-frame-motion">
         {/* Inner Phone Screen Container with Theme Tokens */}
         <div
           className="relative w-full h-full rounded-[38px] max-md:rounded-none overflow-hidden flex flex-col transition-colors duration-200"

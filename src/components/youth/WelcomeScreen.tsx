@@ -80,8 +80,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           - Rendered at 56px height (within 48-64px spec)
           - Aspect ratio strictly preserved at 0.73 : 1 (width: 41px, height: 56px)
           - Clear space of 25% width maintained
+          - Cream (#F4F0E6) surface ensuring the dark outer band contrast is always preserved
         */}
-        <div className="relative mb-6 p-2 rounded-2xl flex items-center justify-center">
+        <div className="relative mb-6 p-3 rounded-2xl flex items-center justify-center bg-[#F4F0E6] shadow-sm border border-[#E4DBCB]/60">
           <img
             src={`${import.meta.env.BASE_URL}emblem-demo-192.png`}
             alt="MEHNA Emblem"

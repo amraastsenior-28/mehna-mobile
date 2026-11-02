@@ -60,6 +60,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
       return () => clearTimeout(timer);
     }
 
+    // Safety timeout: ensure loading screen dismisses smoothly if video playback stalls or in headless environments
+    const safetyTimer = setTimeout(() => {
+      handleTransitionOut();
+    }, 3800);
+
     // Ensure the video plays once without looping
     if (videoRef.current) {
       videoRef.current.play().catch(() => {
@@ -67,6 +72,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
         handleFallback();
       });
     }
+
+    return () => clearTimeout(safetyTimer);
   }, []);
 
   if (isDone) return null;
@@ -74,6 +81,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ language, onComple
   return (
     <div
       role="status"
+      onClick={handleTransitionOut}
       aria-live="polite"
       aria-label={language === 'ar' ? 'جاري تحميل منصة مهنة' : 'Loading MEHNA platform'}
       style={{
