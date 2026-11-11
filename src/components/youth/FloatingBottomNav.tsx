@@ -62,24 +62,27 @@ export const FloatingBottomNav: React.FC<FloatingBottomNavProps> = ({
     return () => mql.removeEventListener('change', handler);
   }, []);
 
-  // Measure and position the capsule behind the active tab
+  // Measure and position the capsule behind the active tab.
+  // IMPORTANT: We use offsetLeft/offsetWidth instead of getBoundingClientRect()
+  // because getBoundingClientRect returns viewport-relative coords. In a Capacitor
+  // WebView (or any scrollable container) those coords include scroll offsets and
+  // safe-area shifts, causing the capsule to drift outside the pill boundary.
+  // offsetLeft is always relative to the element's offsetParent — which is the
+  // container div — so it stays perfectly aligned regardless of scroll position.
   const updateCapsulePosition = useCallback(() => {
     const activeIndex = navItems.findIndex((item) => item.id === activeTab);
     const activeButton = tabRefs.current[activeIndex];
-    const container = containerRef.current;
 
-    if (!activeButton || !container) return;
+    if (!activeButton) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const buttonRect = activeButton.getBoundingClientRect();
-
-    // Position the capsule relative to the container's inner padding
-    const offsetLeft = buttonRect.left - containerRect.left;
-    const width = buttonRect.width;
+    // offsetLeft: pixels from the button's left edge to its offsetParent's left edge.
+    // offsetWidth: rendered width of the button including padding, excluding margin.
+    const offsetLeft = activeButton.offsetLeft;
+    const width = activeButton.offsetWidth;
 
     setCapsuleStyle({
       width: `${width}px`,
-      // Use transform for GPU-accelerated movement instead of left/right
+      // translateX drives the capsule position; GPU-composited so no layout thrash
       transform: `translateX(${offsetLeft}px)`,
     });
   }, [activeTab, navItems]);
@@ -169,19 +172,27 @@ export const FloatingBottomNav: React.FC<FloatingBottomNavProps> = ({
           }}
         />
 
-        {/* Tab buttons container — the capsule slides behind these */}
+        {/* Tab buttons container — the capsule slides behind these.
+            overflow:hidden clips the capsule at the pill boundary so it
+            can never visually escape the floating dock, even at extreme tabs. */}
         <div
           ref={containerRef}
           className="relative flex items-center justify-around px-1.5 py-1.5"
+          style={{ overflow: 'hidden', borderRadius: '24px' }}
         >
           {/* ── Sliding Capsule Indicator ──
               Positioned absolutely behind the active tab button.
+              left:0 is critical — transform: translateX() moves the capsule
+              from the container's left edge, matching offsetLeft measurements.
+              Without left:0, the browser may default to an arbitrary static
+              position and the translateX values will be off.
               Uses CSS transition with a custom spring-like cubic-bezier curve.
               During transit, scaleX stretches slightly to simulate motion blur. */}
           <div
             aria-hidden="true"
             className="absolute top-1.5 bottom-1.5"
             style={{
+              left: 0,  // anchor point: capsule translates FROM here
               ...capsuleStyle,
               // Spring physics curve: fast start, slight overshoot, gentle settle
               transition: reducedMotion
