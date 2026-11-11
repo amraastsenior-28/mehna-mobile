@@ -1,6 +1,7 @@
 export type YouthAppTheme = 'system' | 'light' | 'dark';
 
 export interface YouthUserProfile {
+  id?: string; // Supabase UUID primary key
   name: string;
   phone: string;
   dob: string; // YYYY-MM-DD

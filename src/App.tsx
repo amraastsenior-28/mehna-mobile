@@ -1,15 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Navbar } from './components/Navbar';
 import type { PortalTab, Language } from './components/Navbar';
 import { LandingSection } from './components/LandingSection';
 import { YouthPortal } from './components/YouthPortal';
-import { EmployerConsole } from './components/EmployerConsole';
-import { B2GDashboard } from './components/B2GDashboard';
 import { Footer } from './components/Footer';
 import { LoadingScreen } from './components/LoadingScreen';
 import { DEFAULT_MATCHING_WEIGHTS } from './utils/matchingEngine';
 import type { MatchingWeights } from './utils/matchingEngine';
+
+// Lazy-load heavier desktop/enterprise portals to optimize initial mobile bundle size
+const EmployerConsole = lazy(() =>
+  import('./components/EmployerConsole').then((m) => ({ default: m.EmployerConsole }))
+);
+const B2GDashboard = lazy(() =>
+  import('./components/B2GDashboard').then((m) => ({ default: m.B2GDashboard }))
+);
 
 export function App() {
   const isNative = Capacitor.isNativePlatform();
@@ -96,15 +102,31 @@ export function App() {
         )}
 
         {activeTab === 'employer' && (
-          <EmployerConsole
-            language={language}
-            matchingWeights={matchingWeights}
-            setMatchingWeights={setMatchingWeights}
-          />
+          <Suspense
+            fallback={
+              <div className="w-full min-h-[400px] flex items-center justify-center p-8">
+                <div className="w-8 h-8 border-3 border-[#0E3B33] border-t-transparent rounded-full animate-spin" />
+              </div>
+            }
+          >
+            <EmployerConsole
+              language={language}
+              matchingWeights={matchingWeights}
+              setMatchingWeights={setMatchingWeights}
+            />
+          </Suspense>
         )}
 
         {activeTab === 'b2g' && (
-          <B2GDashboard language={language} />
+          <Suspense
+            fallback={
+              <div className="w-full min-h-[400px] flex items-center justify-center p-8">
+                <div className="w-8 h-8 border-3 border-[#0E3B33] border-t-transparent rounded-full animate-spin" />
+              </div>
+            }
+          >
+            <B2GDashboard language={language} />
+          </Suspense>
         )}
       </main>
 

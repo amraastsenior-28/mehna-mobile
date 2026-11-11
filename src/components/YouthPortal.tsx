@@ -109,24 +109,35 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
 
   useEffect(() => {
     async function loadDatabaseSession() {
-      const session = await youthDB.getCurrentSession();
-      if (session) {
-        // Pre-load user data so it's ready when they proceed past welcome
-        setRestoredUser(session);
+      // 1. Fetch live opportunities from Supabase (with automatic offline fallback)
+      const liveOpps = await youthDB.getOpportunities();
 
-        // Restore user's applied opportunities from the database
-        const appliedIds = await youthDB.getUserAppliedOpportunityIds(session.phone);
-        if (appliedIds && appliedIds.length > 0) {
-          setOpportunities((prev) =>
-            prev.map((opp) => (appliedIds.includes(opp.id) ? { ...opp, isApplied: true } : opp))
-          );
-        }
+      // 2. Hydrate session from database if one exists
+      const session = await youthDB.getCurrentSession();
+      let appliedIds: string[] = [];
+
+      if (session) {
+        setRestoredUser(session);
+        appliedIds = await youthDB.getUserAppliedOpportunityIds(session.phone);
       }
-      // After loading, move from splash to welcome screen
-      // The splash screen's own timer will handle this, but this ensures
-      // data is ready by the time the splash ends
+
+      // 3. Mark applied status on live opportunities
+      setOpportunities(
+        liveOpps.map((opp) => (appliedIds.includes(opp.id) ? { ...opp, isApplied: true } : opp))
+      );
+
+      // 4. Attempt to flush any offline-queued applications
+      await youthDB.flushApplicationOutbox();
     }
+
     loadDatabaseSession();
+
+    // Listen for reconnection to flush the outbox automatically
+    const handleOnline = () => {
+      youthDB.flushApplicationOutbox();
+    };
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
   }, []);
 
   // Navigation tab state with slide direction tracking
