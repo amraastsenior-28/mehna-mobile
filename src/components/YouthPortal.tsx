@@ -4,6 +4,7 @@ import { INITIAL_WBL_OPPORTUNITIES } from '../data/mockData';
 import type { MatchingWeights } from '../utils/matchingEngine';
 import type { Language } from './Navbar';
 import { Wifi, Battery, Signal } from 'lucide-react';
+import { youthDB } from '../services/database';
 
 import type { YouthAppTheme, YouthUserProfile } from './youth/types';
 import { WelcomeScreen } from './youth/WelcomeScreen';
@@ -18,9 +19,24 @@ import { ApplicationSentModal } from './youth/ApplicationSentModal';
 import { StipendsScreen } from './youth/StipendsScreen';
 import { ProfileScreen } from './youth/ProfileScreen';
 import { SettingsScreen } from './youth/SettingsScreen';
-import { GlassBottomNav } from './youth/GlassBottomNav';
-import type { YouthNavTab } from './youth/GlassBottomNav';
+import { FloatingBottomNav } from './youth/FloatingBottomNav';
+import type { YouthNavTab } from './youth/FloatingBottomNav';
 import { calculateSkillMatchScore } from '../utils/matchingEngine';
+
+/**
+ * SplashTimer — invisible component that fires onComplete after a delay.
+ * Respects prefers-reduced-motion by shortening the wait.
+ */
+function SplashTimer({ onComplete }: { onComplete: () => void }) {
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Shorter duration if the user prefers reduced motion
+    const delay = reducedMotion ? 600 : 1800;
+    const timer = setTimeout(onComplete, delay);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+  return null;
+}
 
 interface YouthPortalProps {
   language: Language;
@@ -30,6 +46,8 @@ interface YouthPortalProps {
 /**
  * MEHNA Youth Portal & Mobile Application Shell (v2)
  * Strictly conforms to MEHNA_UI_Spec.md:
+ * - Persistent Database for Users, Sessions, Applications & Parental Consents
+ * - Displays the Sign-In / Welcome Screen first upon opening the app
  * - Color tokens for Light and Dark modes
  * - Glass bottom navigation with 220ms cross-fade and 8px slide transition
  * - Shimmer skeleton matching real card anatomy
@@ -68,28 +86,14 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
     }
   }, [isDark]);
 
-  // Auth flow states: initialized in authenticated demo state so user can immediately view all screens,
-  // with ability to sign out from Settings to test the complete registration and sign-in flow
+  // Auth flow states: always start with 'splash' so user sees the loading animation first,
+  // then transition to 'welcome' (Sign-in) unless a valid database session exists.
   const [authStep, setAuthStep] = useState<
-    'welcome' | 'phone_entry' | 'otp_verification' | 'profile_setup' | 'authenticated'
-  >('authenticated');
+    'splash' | 'welcome' | 'phone_entry' | 'otp_verification' | 'profile_setup' | 'authenticated'
+  >('splash');
 
-  const [user, setUser] = useState<YouthUserProfile | null>({
-    name: 'يوسف محمود علي',
-    phone: '+20 101 234 5678',
-    dob: '2006-05-15',
-    isUnder18: false,
-    parentConsentGiven: true,
-    trackAr: 'تكنولوجيا الطاقة الشمسية والمتجددة',
-    trackEn: 'Solar & Renewable Energy Tech',
-    preferredLocation: 'مجمع بنبان للطاقة الشمسية',
-  });
-
-  const [pendingPhone, setPendingPhone] = useState<string>('+20 101 234 5678');
-
-  // Navigation tab state with slide direction tracking
-  const [activeTab, setActiveTab] = useState<YouthNavTab>('home');
-  const [tabSlideOffset, setTabSlideOffset] = useState<number>(8);
+  const [user, setUser] = useState<YouthUserProfile | null>(null);
+  const [pendingPhone, setPendingPhone] = useState<string>('');
 
   // Opportunities and Applications
   const [opportunities, setOpportunities] = useState<WBLOpportunity[]>(INITIAL_WBL_OPPORTUNITIES);
@@ -97,6 +101,37 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
   const [selectedOpportunityForApply, setSelectedOpportunityForApply] = useState<WBLOpportunity | null>(null);
   const [showParentalConsent, setShowParentalConsent] = useState<boolean>(false);
   const [showApplicationSent, setShowApplicationSent] = useState<boolean>(false);
+
+  // Initialize: always show splash first, then check database for existing session.
+  // If a session exists, we still show the splash → welcome flow (user can tap to enter),
+  // but we pre-load the user data so the transition is instant after sign-in.
+  const [restoredUser, setRestoredUser] = useState<YouthUserProfile | null>(null);
+
+  useEffect(() => {
+    async function loadDatabaseSession() {
+      const session = await youthDB.getCurrentSession();
+      if (session) {
+        // Pre-load user data so it's ready when they proceed past welcome
+        setRestoredUser(session);
+
+        // Restore user's applied opportunities from the database
+        const appliedIds = await youthDB.getUserAppliedOpportunityIds(session.phone);
+        if (appliedIds && appliedIds.length > 0) {
+          setOpportunities((prev) =>
+            prev.map((opp) => (appliedIds.includes(opp.id) ? { ...opp, isApplied: true } : opp))
+          );
+        }
+      }
+      // After loading, move from splash to welcome screen
+      // The splash screen's own timer will handle this, but this ensures
+      // data is ready by the time the splash ends
+    }
+    loadDatabaseSession();
+  }, []);
+
+  // Navigation tab state with slide direction tracking
+  const [activeTab, setActiveTab] = useState<YouthNavTab>('home');
+  const [tabSlideOffset, setTabSlideOffset] = useState<number>(8);
 
   const isAr = language === 'ar';
 
@@ -142,21 +177,46 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
     setAuthStep('profile_setup');
   };
 
-  // Profile Setup Complete
-  const handleProfileComplete = (data: { track: string; skills: string[]; location: string }) => {
-    setUser((prev) => ({
-      ...prev!,
+  // Profile Setup Complete - Save to Database
+  const handleProfileComplete = async (data: { track: string; skills: string[]; location: string }) => {
+    const registeredUser: YouthUserProfile = {
+      ...user!,
       trackAr: data.track,
       skills: data.skills,
       preferredLocation: data.location,
-    }));
+    };
+    setUser(registeredUser);
+    // Persist into database session
+    await youthDB.setSession(registeredUser);
     setAuthStep('authenticated');
     setActiveTab('home');
   };
 
-  // Confirm Application Submission
-  const handleConfirmApplication = () => {
+  // Demo Fast-Track Sign In
+  const handleDemoSignIn = async () => {
+    const demoUser: YouthUserProfile = {
+      name: 'يوسف محمود علي',
+      phone: '+20 101 234 5678',
+      dob: '2006-05-15',
+      isUnder18: false,
+      parentConsentGiven: true,
+      trackAr: 'تكنولوجيا الطاقة الشمسية والمتجددة',
+      trackEn: 'Solar & Renewable Energy Tech',
+      preferredLocation: 'مجمع بنبان للطاقة الشمسية',
+    };
+    setUser(demoUser);
+    await youthDB.setSession(demoUser);
+    setAuthStep('authenticated');
+    setActiveTab('home');
+  };
+
+  // Confirm Application Submission - Record into Database
+  const handleConfirmApplication = async () => {
     if (!selectedOpportunityForApply) return;
+
+    if (user?.phone) {
+      await youthDB.recordApplication(user.phone, selectedOpportunityForApply.id);
+    }
 
     setOpportunities((prev) =>
       prev.map((opp) =>
@@ -168,20 +228,40 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
     setShowApplicationSent(true);
   };
 
-  // Parental Consent Granted
-  const handleParentConsentSuccess = (parentPhone: string, _relation: string) => {
-    setUser((prev) => (prev ? { ...prev, parentConsentGiven: true, parentPhone } : null));
+  // Parental Consent Granted - Persist into Database
+  const handleParentConsentSuccess = async (parentPhone: string, relation: string) => {
+    if (user) {
+      const updatedUser: YouthUserProfile = {
+        ...user,
+        parentConsentGiven: true,
+        parentPhone,
+      };
+      setUser(updatedUser);
+      await youthDB.setSession(updatedUser);
+      await youthDB.recordParentalConsent(user.phone, parentPhone, relation);
+    }
     setShowParentalConsent(false);
     if (selectedOpportunityForApply) {
-      handleConfirmApplication();
+      await handleConfirmApplication();
     }
   };
 
-  // Sign out
-  const handleSignOut = () => {
+  // Sign out - Clears Database Session and Returns to Sign-in Page
+  const handleSignOut = async () => {
+    await youthDB.clearSession();
     setUser(null);
+    setRestoredUser(null);
     setAuthStep('welcome');
     setActiveTab('home');
+  };
+
+  // Quick Apply guard: if guest, prompt to sign in
+  const handleQuickApply = (opp: WBLOpportunity) => {
+    if (!user) {
+      setAuthStep('welcome');
+      return;
+    }
+    setSelectedOpportunityForApply(opp);
   };
 
   return (
@@ -229,6 +309,69 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
           {/* Main App Container */}
           <div className="flex-1 flex flex-col overflow-hidden relative">
             {/* Screen Routing based on Auth Step */}
+
+            {/* Splash Screen: brief branded loading animation before sign-in */}
+            {authStep === 'splash' && (
+              <div
+                className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+                style={{ backgroundColor: '#F4F0E6' }}
+              >
+                {/* Decorative arch rings behind the emblem */}
+                <div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[58%] rounded-t-full border pointer-events-none"
+                  style={{
+                    width: 'min(76vw, 340px)',
+                    height: 'min(76vw, 340px)',
+                    borderColor: 'rgba(201, 160, 82, 0.2)',
+                  }}
+                  aria-hidden="true"
+                />
+                <div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[58%] rounded-t-full border pointer-events-none"
+                  style={{
+                    width: 'min(58vw, 260px)',
+                    height: 'min(58vw, 260px)',
+                    borderColor: 'rgba(14, 59, 51, 0.08)',
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Emblem centered at 40% screen width */}
+                <div className="relative z-10 flex flex-col items-center splash-emblem-in">
+                  <img
+                    src={`${import.meta.env.BASE_URL}emblem-demo-512.png`}
+                    alt={isAr ? 'شعار مهنة' : 'MEHNA emblem'}
+                    className="select-none pointer-events-none"
+                    style={{
+                      width: 'min(40vw, 180px)',
+                      height: 'auto',
+                      aspectRatio: '0.73 / 1',
+                      objectFit: 'contain',
+                    }}
+                  />
+                  <p
+                    className="mt-4 text-center text-[16px] font-medium"
+                    style={{ color: '#5B6661' }}
+                  >
+                    {isAr ? 'فرص تليق بمهارتك.' : 'Work worthy of your craft.'}
+                  </p>
+                </div>
+
+                {/* Animated progress bar at bottom */}
+                <div className="absolute bottom-16 flex flex-col items-center gap-3">
+                  <div className="h-[2px] w-36 overflow-hidden rounded-full" style={{ backgroundColor: '#E4DBCB' }}>
+                    <div className="splash-progress-bar h-full w-full" style={{ backgroundColor: '#C4824A' }} />
+                  </div>
+                  <span className="text-[13px] tracking-wide" style={{ color: '#5B6661' }}>
+                    {isAr ? 'جارٍ التجهيز' : 'Preparing your space'}
+                  </span>
+                </div>
+
+                {/* Auto-advance to welcome after splash animation completes */}
+                <SplashTimer onComplete={() => setAuthStep('welcome')} />
+              </div>
+            )}
+
             {authStep === 'welcome' && (
               <WelcomeScreen
                 language={language}
@@ -241,6 +384,16 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
                   setAuthStep('authenticated');
                   setActiveTab('home');
                 }}
+                // If a returning user session exists, offer quick re-entry
+                restoredUser={restoredUser}
+                onContinueAsUser={() => {
+                  if (restoredUser) {
+                    setUser(restoredUser);
+                    setAuthStep('authenticated');
+                    setActiveTab('home');
+                  }
+                }}
+                onDemoSignIn={handleDemoSignIn}
               />
             )}
 
@@ -283,7 +436,7 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
                       language={language}
                       matchingWeights={matchingWeights}
                       onSelectOpportunity={(opp) => setSelectedOpportunityForDetail(opp)}
-                      onQuickApply={(opp) => setSelectedOpportunityForApply(opp)}
+                      onQuickApply={handleQuickApply}
                       isDark={isDark}
                       userTrack={user?.trackAr}
                     />
@@ -315,8 +468,8 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
                   )}
                 </div>
 
-                {/* Glass Bottom Navigation Bar (Spec Section 3) */}
-                <GlassBottomNav
+                {/* Floating Bottom Navigation — Premium Neo-Banking Style (replaces GlassBottomNav) */}
+                <FloatingBottomNav
                   activeTab={activeTab}
                   onChangeTab={handleTabChange}
                   language={language}
