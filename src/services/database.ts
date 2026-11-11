@@ -243,9 +243,20 @@ class YouthDatabaseService {
    * Records an application submission using the Idempotent Outbox pattern.
    * Immediately registers locally, and attempts cloud sync. If offline, the
    * record is queued in the Outbox to be synchronized automatically when reconnected.
+   * 
+   * Minor Protection Guard: Rejects submissions if candidate is flagged as under 18
+   * and lacks verified parental consent per Egypt Data Protection Law 151/2020.
    */
   async recordApplication(userId: string, opportunityId: string): Promise<void> {
     if (!this.isBrowser()) return;
+
+    // Defense-in-depth: check minor consent status before recording
+    const currentUser = await this.getCurrentSession();
+    if (currentUser?.isUnder18 && !currentUser.parentConsentGiven) {
+      console.warn('Blocked application: Candidate is under 18 and lacks verified parental consent.');
+      throw new Error('MINOR_CONSENT_REQUIRED');
+    }
+
     try {
       const clientGeneratedId = `app_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const newRecord: ApplicationRecord = {
