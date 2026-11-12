@@ -74,6 +74,7 @@ class YouthDatabaseService {
         // Map PostgreSQL snake_case columns to camelCase domain model
         const cloudOpportunities: WBLOpportunity[] = data.map((row) => ({
           id: row.id,
+          employerId: row.employer_id,
           titleAr: row.title_ar,
           titleEn: row.title_en,
           employerAr: row.employer_ar,

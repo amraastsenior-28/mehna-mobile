@@ -2,6 +2,7 @@ import type { KSAOScores } from '../utils/matchingEngine';
 
 export interface WBLOpportunity {
   id: string;
+  employerId?: string;
   titleAr: string;
   titleEn: string;
   employerAr: string;
