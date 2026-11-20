@@ -13,6 +13,9 @@ import {
   MapPin,
   X,
   Coins,
+  ShieldCheck,
+  Award,
+  Truck,
 } from 'lucide-react';
 
 interface EmployerConsoleProps {
@@ -37,6 +40,9 @@ export const EmployerConsole: React.FC<EmployerConsoleProps> = ({
   const [newOpenings, setNewOpenings] = useState(2);
   const [newLocation, setNewLocation] = useState('أسوان');
   const [newStipend, setNewStipend] = useState(STIPEND_CONFIG.defaultNewVacancyStipend);
+  const [newTransportAllowance, setNewTransportAllowance] = useState(300);
+  const [newIsVerified, setNewIsVerified] = useState(true);
+  const [newIsMinorSafe, setNewIsMinorSafe] = useState(true);
 
   // Handle live weight slider changes
   const handleWeightChange = (key: keyof MatchingWeights, value: number) => {
@@ -82,6 +88,9 @@ export const EmployerConsole: React.FC<EmployerConsoleProps> = ({
       locationAr: newLocation,
       locationEn: newLocation,
       stipend: Number(newStipend),
+      transportationAllowance: Number(newTransportAllowance),
+      isVerifiedWBLPartner: newIsVerified,
+      isMinorSafeWorkplace: newIsMinorSafe,
       applicants: [
         {
           id: `app-sim-${Date.now()}`,
@@ -309,12 +318,34 @@ export const EmployerConsole: React.FC<EmployerConsoleProps> = ({
                             {isAr ? STIPEND_CONFIG.illustrativeLabelAr : 'Illustrative'}
                           </span>
                         </span>
+                        {vac.transportationAllowance && vac.transportationAllowance > 0 && (
+                          <span className="flex items-center gap-1 font-semibold text-sky-600">
+                            <Truck className="w-3 h-3 text-sky-500" />
+                            <span>{vac.transportationAllowance} {isAr ? 'ج.م مواصلات' : 'EGP transport'}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0E3B33]/5 text-[#0E3B33] text-xs font-bold shrink-0">
-                      <Users className="w-3.5 h-3.5 text-[#C4824A]" />
-                      <span>{vac.applicants.length} {isAr ? 'متقدمين' : 'apps'}</span>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0E3B33]/5 text-[#0E3B33] text-xs font-bold">
+                        <Users className="w-3.5 h-3.5 text-[#C4824A]" />
+                        <span>{vac.applicants.length} {isAr ? 'متقدمين' : 'apps'}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {vac.isVerifiedWBLPartner && (
+                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/15 text-emerald-700 border border-emerald-500/30">
+                            <ShieldCheck className="w-3 h-3" />
+                            {isAr ? 'معتمد' : 'Verified'}
+                          </span>
+                        )}
+                        {vac.isMinorSafeWorkplace && (
+                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-sky-500/15 text-sky-700 border border-sky-500/30">
+                            <Award className="w-3 h-3" />
+                            {isAr ? 'آمن' : 'Safe'}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -488,7 +519,7 @@ export const EmployerConsole: React.FC<EmployerConsoleProps> = ({
                     className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#C4824A] bg-white text-xs"
                   >
                     <option value="الطاقة المتجددة">{isAr ? 'الطاقة المتجددة' : 'Renewable Energy'}</option>
-                    <option value="الزراعة المستدامة">{isAr ? 'الزراعة المستدامة' : 'Sustainable Agriculture'}</option>
+                    <option value="ال الزراعة المستدامة">{isAr ? 'الزراعة المستدامة' : 'Sustainable Agriculture'}</option>
                     <option value="الحرف التراثية">{isAr ? 'الحرف التراثية' : 'Heritage Crafts'}</option>
                     <option value="السياحة البيئية">{isAr ? 'السياحة البيئية' : 'Eco-Tourism'}</option>
                   </select>
@@ -535,6 +566,47 @@ export const EmployerConsole: React.FC<EmployerConsoleProps> = ({
                     className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#C4824A]"
                   />
                 </div>
+              </div>
+
+              {/* Transportation Allowance */}
+              <div>
+                <label className="block text-xs font-bold text-[#0E3B33] mb-1">
+                  {isAr ? 'بدل المواصلات التقديري (ج.م)' : 'Estimated Transport Allowance (EGP)'}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="50"
+                  value={newTransportAllowance}
+                  onChange={(e) => setNewTransportAllowance(Number(e.target.value))}
+                  className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#C4824A]"
+                />
+              </div>
+
+              {/* Verification & Safety Checkboxes */}
+              <div className="space-y-2 pt-2 border-t border-gray-200">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newIsVerified}
+                    onChange={(e) => setNewIsVerified(e.target.checked)}
+                    className="w-4 h-4 accent-[#C4824A] rounded border-gray-300"
+                  />
+                  <span className="text-xs font-medium text-[#0E3B33]">
+                    {isAr ? 'شريك WBL معتمد (Verified WBL Partner)' : 'Verified WBL Partner'}
+                  </span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newIsMinorSafe}
+                    onChange={(e) => setNewIsMinorSafe(e.target.checked)}
+                    className="w-4 h-4 accent-sky-500 rounded border-gray-300"
+                  />
+                  <span className="text-xs font-medium text-[#0E3B33]">
+                    {isAr ? 'مكان عمل آمن للقاصرين (Minor-Safe Workplace)' : 'Minor-Safe Workplace'}
+                  </span>
+                </label>
               </div>
 
               <div className="pt-4 flex justify-end gap-2">

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { WBLOpportunity } from '../../data/mockData';
 import type { Language } from '../Navbar';
-import { X, MapPin, Building2, CheckCircle, ShieldCheck, Calendar, Sparkles } from 'lucide-react';
+import { X, MapPin, Building2, CheckCircle, ShieldCheck, Calendar, Sparkles, Truck, Award, AlertCircle, PlayCircle, CheckCircle2 } from 'lucide-react';
 
 interface OpportunityDetailModalProps {
   opportunity: WBLOpportunity;
@@ -67,7 +67,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          {/* Top Hero Section: Large Stipend Numerals (Spec Section 7) */}
+          {/* Top Hero Section: Large Stipend Numerals with Transportation Allowance */}
           <div
             className="p-4 rounded-2xl border"
             style={{
@@ -85,7 +85,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Prominent Numerals */}
+            {/* Prominent Numerals - Base Stipend */}
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-3xl font-black font-mono text-[var(--theme-text)]">
                 {opportunity.stipend.toLocaleString()}
@@ -94,6 +94,40 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                 {isAr ? 'ج.م / شهرياً' : 'EGP / month'}
               </span>
             </div>
+
+            {/* Transportation Allowance Badge */}
+            {opportunity.transportationAllowance && opportunity.transportationAllowance > 0 && (
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--theme-border)]">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/70 dark:bg-black/30 border border-[var(--theme-border)]">
+                  <Truck className="w-4 h-4 text-sky-500" />
+                  <div>
+                    <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
+                      {isAr ? 'بدل مواصلات' : 'Transport Allowance'}
+                    </span>
+                    <span className="block text-sm font-black text-sky-700 dark:text-sky-300">
+                      {opportunity.transportationAllowance.toLocaleString()} {isAr ? 'ج.م' : 'EGP'}
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[10px] text-[var(--theme-text-muted)]">
+                  {isAr ? 'مغطى للمتدربين من المناطق النائية' : 'Covered for rural trainees'}
+                </span>
+              </div>
+            )}
+
+            {/* Total Compensation Summary */}
+            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--theme-border)]">
+              <span className="text-xs font-bold text-[var(--theme-accent-ink)] uppercase">
+                {isAr ? 'إجمالي التعويض الشهري' : 'Total Monthly Compensation'}
+              </span>
+              <span className="text-xl font-black font-mono text-[var(--theme-primary)]">
+                {(opportunity.stipend + (opportunity.transportationAllowance || 0)).toLocaleString()}
+              </span>
+              <span className="text-sm font-bold text-[var(--theme-text-muted)]">
+                {isAr ? 'ج.م' : 'EGP'}
+              </span>
+            </div>
+
             <p className="text-[11px] text-[var(--theme-text-muted)] mt-1">
               {isAr
                 ? 'تصرف من صندوق دعم التدريب الوطني عبر بطاقات ميزة / البريد المصري.'
@@ -109,12 +143,31 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
             <h2 className="text-xl font-black text-[var(--theme-text)] leading-snug mb-1">
               {isAr ? opportunity.titleAr : opportunity.titleEn}
             </h2>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--theme-primary)]">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[var(--theme-primary)] mb-2">
               <Building2 className="w-4 h-4 shrink-0" />
               <span>{isAr ? opportunity.employerAr : opportunity.employerEn}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/15 text-[var(--theme-success)] font-bold">
-                {isAr ? 'شريك معتمد' : 'Verified Partner'}
-              </span>
+            </div>
+
+            {/* Employer Verification & Safety Badges Row */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {opportunity.isVerifiedWBLPartner && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  {isAr ? 'شريك WBL معتمد' : 'Verified WBL Partner'}
+                </span>
+              )}
+              {opportunity.isMinorSafeWorkplace && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/30">
+                  <Award className="w-3.5 h-3.5" />
+                  {isAr ? 'مكان عمل آمن للقاصرين' : 'Minor-Safe Workplace'}
+                </span>
+              )}
+              {opportunity.employerVerificationStatus === 'pending' && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  {isAr ? 'قيد التحقق' : 'Pending Verification'}
+                </span>
+              )}
             </div>
           </div>
 
@@ -167,44 +220,78 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
             </p>
           </div>
 
-          {/* KSAO Competencies Checklist (Spec Section 7) */}
+          {/* Video Promo Player (Entry 014 - Step 1 User Request) */}
+          {opportunity.promoVideoUrl && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text)]">
+                <PlayCircle className="w-4 h-4 text-[var(--theme-accent)] shrink-0" />
+                <span>{isAr ? 'فيديو تعريفي لبيئة العمل والمهام الميدانية:' : 'Workplace & Training Promo Video:'}</span>
+              </div>
+              <div className="mehna-video-container border border-[var(--theme-border)] bg-black/10">
+                <iframe
+                  src={opportunity.promoVideoUrl}
+                  title={isAr ? `فيديو تعريفي: ${opportunity.titleAr}` : `Promo: ${opportunity.titleEn}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full rounded-2xl"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Practical Deliverables & Mastery Card (Replaces abstract KSAO grid - Entry 014 Step 2) */}
           <div
-            className="p-4 rounded-2xl border space-y-2.5"
+            className="p-4 rounded-2xl border space-y-3"
             style={{
               backgroundColor: 'var(--theme-surface)',
               borderColor: 'var(--theme-border)',
             }}
           >
-            <h3 className="font-bold text-xs uppercase tracking-wider text-[var(--theme-primary)] flex items-center gap-1.5">
-              <CheckCircle className="w-4 h-4 text-[var(--theme-accent)]" />
-              <span>{isAr ? 'الكفاءات المطلوبة (إطار ديسلر KSAO):' : 'Required Competencies (KSAO Framework):'}</span>
-            </h3>
+            <div className="space-y-0.5">
+              <h3 className="font-bold text-sm text-[var(--theme-primary)] flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[var(--theme-accent)] shrink-0" />
+                <span>{isAr ? 'ما ستتقنه وتنفذه في هذا التدريب:' : "What You'll Master & Deliver:"}</span>
+              </h3>
+              <p className="text-[11px] text-[var(--theme-text-muted)]">
+                {isAr
+                  ? 'مخرجات عملية ميدانية واقعية تؤهلك للاعتماد المهني وفرص التوظيف المباشر'
+                  : 'Practical field deliverables qualifying you for technical certification & direct placement'}
+              </p>
+            </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2 rounded-lg bg-[var(--theme-bg)] flex items-center justify-between">
-                <span className="text-[var(--theme-text-muted)]">{isAr ? 'المعرفة النظرية (K)' : 'Knowledge (K)'}</span>
-                <span className="font-bold font-mono text-[var(--theme-primary)]">
-                  {opportunity.candidateKSAO.knowledge}%
-                </span>
-              </div>
-              <div className="p-2 rounded-lg bg-[var(--theme-bg)] flex items-center justify-between">
-                <span className="text-[var(--theme-text-muted)]">{isAr ? 'المهارات العملية (S)' : 'Skills (S)'}</span>
-                <span className="font-bold font-mono text-[var(--theme-primary)]">
-                  {opportunity.candidateKSAO.practicalSkills}%
-                </span>
-              </div>
-              <div className="p-2 rounded-lg bg-[var(--theme-bg)] flex items-center justify-between">
-                <span className="text-[var(--theme-text-muted)]">{isAr ? 'القدرات التحليلية (A)' : 'Abilities (A)'}</span>
-                <span className="font-bold font-mono text-[var(--theme-primary)]">
-                  {opportunity.candidateKSAO.abilities}%
-                </span>
-              </div>
-              <div className="p-2 rounded-lg bg-[var(--theme-bg)] flex items-center justify-between">
-                <span className="text-[var(--theme-text-muted)]">{isAr ? 'السياق الميداني (O)' : 'Context (O)'}</span>
-                <span className="font-bold font-mono text-[var(--theme-primary)]">
-                  {opportunity.candidateKSAO.contextual}%
-                </span>
-              </div>
+            {/* Checklist of concrete trade outputs */}
+            <div className="space-y-2">
+              {((isAr ? opportunity.deliverables : opportunity.deliverablesEn) ||
+                (isAr
+                  ? [
+                      'إتقان إجراءات التشغيل والسلامة المهنية بالموقع',
+                      'التعامل المباشر مع المعدات والمحطات الميدانية',
+                      'تشخيص وحل الأعطال تحت إشراف معلمين حرفيين',
+                      'الحصول على شهادة خبرة معتمدة بعد انتهاء الفترة',
+                    ]
+                  : [
+                      'Master standard HSE workplace protocols on-site',
+                      'Direct hands-on operation with field machinery',
+                      'Diagnose and resolve technical issues under master craftsmen',
+                      'Earn certified dual-VET credentials upon completion',
+                    ])
+              ).map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-2.5 rounded-xl border flex items-start gap-2.5 transition-colors"
+                  style={{
+                    backgroundColor: 'var(--theme-bg)',
+                    borderColor: 'var(--theme-border)',
+                  }}
+                >
+                  <span className="w-5 h-5 rounded-full bg-[var(--theme-primary)]/15 text-[var(--theme-primary)] dark:bg-[var(--theme-primary)]/30 dark:text-[var(--theme-primary)] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    ✓
+                  </span>
+                  <span className="text-xs font-semibold text-[var(--theme-text)] leading-relaxed">
+                    {item}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

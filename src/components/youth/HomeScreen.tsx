@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { WBLOpportunity } from '../../data/mockData';
 import type { Language } from '../Navbar';
-import { Search, MapPin, Building2, Coins, Check } from 'lucide-react';
+import { Search, MapPin, Building2, Coins, Check, ShieldCheck, Truck, Award, AlertCircle, SlidersHorizontal } from 'lucide-react';
 import { StaggeredList } from './StaggeredList';
 import { OpportunityListSkeleton } from './ShimmerSkeleton';
 import type { MatchingWeights } from '../../utils/matchingEngine';
@@ -39,6 +39,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSector, setSelectedSector] = useState<string>('all');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Interactive collapsible brand header state (Entry 014 - Step 3)
+  const [isBrandHeaderVisible, setIsBrandHeaderVisible] = useState<boolean>(true);
+  const [lastScrollY, setLastScrollY] = useState<number>(0);
 
   // Trigger simulated loading skeleton on mount or sector change
   useEffect(() => {
@@ -48,6 +51,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     }, 400);
     return () => clearTimeout(timer);
   }, [selectedSector]);
+
+  // Handle scroll to smoothly collapse/expand the top brand board
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const currentScrollY = e.currentTarget.scrollTop;
+    if (currentScrollY > 45 && currentScrollY > lastScrollY) {
+      // User is actively scrolling down into content -> collapse brand board
+      setIsBrandHeaderVisible(false);
+    } else if (currentScrollY < lastScrollY - 5 || currentScrollY <= 15) {
+      // User is scrolling up or at the very top -> restore brand board
+      setIsBrandHeaderVisible(true);
+    }
+    setLastScrollY(currentScrollY);
+  };
 
   const sectors = [
     { id: 'all', labelAr: 'الكل', labelEn: 'All Sectors' },
@@ -80,19 +96,60 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <div
+      onScroll={handleScroll}
       className="w-full h-full flex flex-col overflow-y-auto selection:bg-[#C4824A] selection:text-white"
       style={{
         backgroundColor: 'var(--theme-bg)',
         color: 'var(--theme-text)',
       }}
     >
-      {/* Sticky Search & Filter Header */}
+      {/* Sticky Search & Brand Header */}
       <div
         className="sticky top-0 z-30 px-4 pt-3 pb-2 border-b transition-colors mehna-glass-bar"
         style={{
           borderColor: 'var(--theme-border)',
         }}
       >
+        {/* Interactive Collapsible Brand Board (Entry 014 - Step 3) */}
+        <div
+          className={`mehna-brand-header transition-all duration-300 ease-out overflow-hidden ${
+            isBrandHeaderVisible ? 'max-h-24 opacity-100 mb-2.5' : 'max-h-0 opacity-0 mb-0 pointer-events-none'
+          }`}
+        >
+          <div className="flex items-center justify-between pb-1">
+            <div className="flex items-center gap-2.5">
+              <img
+                src={`${import.meta.env.BASE_URL}emblem-demo-512.png`}
+                alt="MEHNA Emblem"
+                className="w-8 h-8 rounded-xl object-contain border border-[var(--theme-border)] bg-[var(--theme-surface)] shadow-xs"
+                onError={(e) => {
+                  (e.currentTarget as HTMLElement).style.display = 'none';
+                }}
+              />
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-brand font-black text-lg tracking-wider text-[var(--theme-primary)] dark:text-[var(--theme-accent)]">
+                    {isAr ? 'مِـهْـنَـة' : 'MEHNA'}
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-[var(--theme-accent)]/15 text-[var(--theme-accent-ink)] border border-[var(--theme-accent)]/20">
+                    {isAr ? 'أسوان' : 'Aswan'}
+                  </span>
+                </div>
+                <p className="text-[10px] font-medium text-[var(--theme-text-muted)] line-clamp-1">
+                  {isAr
+                    ? 'ربط التعليم الفني بسوق العمل الحقيقي'
+                    : 'Dual VET & Real Market Gateway'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[var(--theme-primary)]/10 text-[var(--theme-primary)] dark:text-[var(--theme-accent)] border border-[var(--theme-border)]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--theme-accent)]" />
+              <span>{isAr ? 'منظومة معتمدة' : 'Accredited'}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Search input with 48px ergonomic touch height */}
         <div className="relative mb-2.5">
           <Search className="w-5 h-5 absolute top-1/2 -translate-y-1/2 start-3.5 text-[var(--theme-text-muted)] pointer-events-none" />
@@ -114,7 +171,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           />
         </div>
 
-        {/* Filter Chips Row */}
+        {/* Filter Chips Row (Top Quick View) */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
           {sectors.map((sec) => {
             const isSelected = selectedSector === sec.id;
@@ -137,7 +194,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       {/* Main Opportunities Feed */}
-      <div className="flex-1 p-4 space-y-3.5 pb-20">
+      <div className="flex-1 p-4 space-y-3.5 pb-36">
         {/* Feed Header */}
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-[var(--theme-text)]">
@@ -195,6 +252,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         <Building2 className="w-3.5 h-3.5 text-[var(--theme-accent)] shrink-0" />
                         <span className="font-semibold">{isAr ? opp.employerAr : opp.employerEn}</span>
                       </div>
+                      {/* Employer Verification & Safety Badges */}
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {opp.isVerifiedWBLPartner && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                            <ShieldCheck className="w-3 h-3" />
+                            {isAr ? 'شريك معتمد' : 'Verified Partner'}
+                          </span>
+                        )}
+                        {opp.isMinorSafeWorkplace && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/30">
+                            <Award className="w-3 h-3" />
+                            {isAr ? 'آمن للقاصرين' : 'Minor-Safe'}
+                          </span>
+                        )}
+                        {opp.employerVerificationStatus === 'pending' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                            <AlertCircle className="w-3 h-3" />
+                            {isAr ? 'قيد التحقق' : 'Pending Verification'}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Match Score Badge (Accent Token) */}
@@ -227,7 +305,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         <span className="truncate">{isAr ? opp.locationAr : opp.locationEn}</span>
                       </div>
 
-                      {/* Prominent Stipend Numerals */}
+                      {/* Prominent Stipend Numerals with Transportation Allowance */}
                       <div className="flex items-baseline gap-1 text-[var(--theme-text)]">
                         <Coins className="w-3.5 h-3.5 text-[var(--theme-accent)] shrink-0 self-center" />
                         <span className="font-mono font-black text-base text-[var(--theme-accent-ink)]">
@@ -237,6 +315,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           {isAr ? 'ج.م / شهرياً' : 'EGP/mo'}
                         </span>
                       </div>
+                      {opp.transportationAllowance && opp.transportationAllowance > 0 && (
+                        <div className="flex items-baseline gap-1 text-[var(--theme-text)]">
+                          <Truck className="w-3.5 h-3.5 text-sky-500 shrink-0 self-center" />
+                          <span className="font-mono font-bold text-base text-sky-600 dark:text-sky-400">
+                            +{opp.transportationAllowance.toLocaleString()}
+                          </span>
+                          <span className="text-[11px] font-bold text-[var(--theme-text-muted)]">
+                            {isAr ? 'ج.م مواصلات' : 'EGP transport'}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Apply Button */}
@@ -274,6 +363,41 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             })}
           </StaggeredList>
         )}
+      </div>
+
+      {/* Floating Bottom-Anchored Thumb Filter Tray (Entry 014 - Step 6 Suggestion C) */}
+      <div className="fixed bottom-20 inset-x-0 z-30 flex justify-center pointer-events-none px-3">
+        <div
+          className="pointer-events-auto shadow-card-hover rounded-2xl border p-1.5 backdrop-blur-md transition-all mehna-glass-bar flex items-center gap-1.5 max-w-sm w-full"
+          style={{
+            borderColor: 'var(--theme-border)',
+          }}
+        >
+          <div className="flex items-center gap-1 px-1.5 text-xs font-bold text-[var(--theme-accent-ink)] shrink-0">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--theme-accent)]" />
+            <span className="text-[10px] hidden sm:inline">{isAr ? 'القطاع:' : 'Sector:'}</span>
+          </div>
+
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 px-0.5 flex-1">
+            {sectors.map((sec) => {
+              const isSelected = selectedSector === sec.id;
+              return (
+                <button
+                  key={sec.id}
+                  onClick={() => setSelectedSector(sec.id)}
+                  className="px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 active:scale-95"
+                  style={{
+                    backgroundColor: isSelected ? 'var(--theme-primary)' : 'var(--theme-surface)',
+                    borderColor: isSelected ? 'var(--theme-primary)' : 'var(--theme-border)',
+                    color: isSelected ? 'var(--theme-on-primary)' : 'var(--theme-text-muted)',
+                  }}
+                >
+                  {isAr ? sec.labelAr : sec.labelEn}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

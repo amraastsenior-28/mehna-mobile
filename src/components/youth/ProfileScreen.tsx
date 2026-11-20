@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Language } from '../Navbar';
 import type { YouthUserProfile } from './types';
 import { YOUTH_PROFILE_DATA } from '../../data/mockData';
-import { User, MapPin, Award, ShieldCheck, Edit3, Sparkles } from 'lucide-react';
+import { User, MapPin, Award, ShieldCheck, Edit3, Sparkles, BookOpen } from 'lucide-react';
+import { WorkshopLogbook } from './WorkshopLogbook';
 
 interface ProfileScreenProps {
   language: Language;
@@ -29,6 +30,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onEditProfile,
 }) => {
   const isAr = language === 'ar';
+  const [showLogbook, setShowLogbook] = useState(false);
 
   const candidateName = user?.name || (isAr ? YOUTH_PROFILE_DATA.nameAr : YOUTH_PROFILE_DATA.nameEn);
   const trackName =
@@ -143,6 +145,47 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Dual-Learning Logbook Quick Access Banner (Entry 014 - Step 4) */}
+      <div
+        onClick={() => setShowLogbook(true)}
+        className="p-4 rounded-3xl border shadow-card cursor-pointer hover:border-[#C8963E]/40 transition-all flex items-center justify-between group active:scale-[0.99]"
+        style={{
+          backgroundColor: 'var(--theme-surface)',
+          borderColor: 'var(--theme-border)',
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#0D4A38]/10 text-[#0D4A38] dark:bg-white/10 dark:text-emerald-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <BookOpen className="w-5 h-5 text-[#C8963E]" />
+          </div>
+          <div>
+            <h3 className="font-black text-sm text-[var(--theme-text)] group-hover:text-[#C8963E] transition-colors">
+              {isAr ? 'سجل التدريب الميداني المزدوج' : 'Workshop Training Logbook'}
+            </h3>
+            <p className="text-[11px] text-[var(--theme-text-muted)]">
+              {isAr
+                ? '84 ساعة عملية موثقة بتوقيع المشرفين والمعلمين الحرفيين'
+                : '84 verified practical hours signed by master craftsmen'}
+            </p>
+          </div>
+        </div>
+        <span className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#0D4A38] shrink-0 shadow-xs">
+          {isAr ? 'عرض السجل' : 'View'}
+        </span>
+      </div>
+
+      {/* Modal View for Workshop Logbook */}
+      {showLogbook && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-xs">
+          <div className="w-full h-[90vh] rounded-t-3xl overflow-hidden shadow-2xl">
+            <WorkshopLogbook
+              language={language}
+              onClose={() => setShowLogbook(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* KSAO Competency 4-Factor Bars (Spec Section 7) */}
       <div

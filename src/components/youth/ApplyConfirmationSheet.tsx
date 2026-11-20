@@ -1,7 +1,7 @@
 import React from 'react';
 import type { WBLOpportunity } from '../../data/mockData';
 import type { Language } from '../Navbar';
-import { X, Building2, MapPin, Calendar, Coins, ShieldCheck, Check } from 'lucide-react';
+import { X, Building2, MapPin, Calendar, Coins, ShieldCheck, Check, Truck } from 'lucide-react';
 
 interface ApplyConfirmationSheetProps {
   opportunity: WBLOpportunity;
@@ -90,26 +90,64 @@ export const ApplyConfirmationSheet: React.FC<ApplyConfirmationSheetProps> = ({
               borderColor: 'var(--theme-border)',
             }}
           >
-            {/* Employer */}
-            <div className="flex items-center justify-between">
-              <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-[var(--theme-accent)]" />
-                <span>{isAr ? 'جهة العمل والشريك الميداني:' : 'Employer / Host:'}</span>
-              </span>
-              <span className="font-bold text-[var(--theme-text)]">
-                {isAr ? opportunity.employerAr : opportunity.employerEn}
-              </span>
+            {/* Employer with Verification Badges */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                  <Building2 className="w-4 h-4 text-[var(--theme-accent)]" />
+                  <span>{isAr ? 'جهة العمل والشريك الميداني:' : 'Employer / Host:'}</span>
+                </span>
+                <span className="font-bold text-[var(--theme-text)]">
+                  {isAr ? opportunity.employerAr : opportunity.employerEn}
+                </span>
+              </div>
+              {/* Verification & Safety Badges */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {opportunity.isVerifiedWBLPartner && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                    <ShieldCheck className="w-3 h-3" />
+                    {isAr ? 'شريك معتمد' : 'Verified Partner'}
+                  </span>
+                )}
+                {opportunity.isMinorSafeWorkplace && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/30">
+                    <ShieldCheck className="w-3 h-3" />
+                    {isAr ? 'آمن للقاصرين' : 'Minor-Safe'}
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Stipend */}
-            <div className="flex items-center justify-between">
-              <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
-                <Coins className="w-4 h-4 text-[var(--theme-accent)]" />
-                <span>{isAr ? 'المكافأة الشهرية المعتمدة:' : 'Monthly Stipend:'}</span>
-              </span>
-              <span className="font-black font-mono text-base text-[var(--theme-accent-ink)]">
-                {opportunity.stipend.toLocaleString()} {isAr ? 'ج.م' : 'EGP'}
-              </span>
+            {/* Stipend with Transportation Allowance */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                  <Coins className="w-4 h-4 text-[var(--theme-accent)]" />
+                  <span>{isAr ? 'المكافأة الشهرية المعتمدة:' : 'Monthly Stipend:'}</span>
+                </span>
+                <span className="font-black font-mono text-base text-[var(--theme-accent-ink)]">
+                  {opportunity.stipend.toLocaleString()} {isAr ? 'ج.م' : 'EGP'}
+                </span>
+              </div>
+              {opportunity.transportationAllowance && opportunity.transportationAllowance > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[var(--theme-text-muted)] flex items-center gap-1.5">
+                    <Truck className="w-4 h-4 text-sky-500" />
+                    <span>{isAr ? 'بدل مواصلات (مناطق نائية):' : 'Transport Allowance (Rural):'}</span>
+                  </span>
+                  <span className="font-black font-mono text-base text-sky-600 dark:text-sky-400">
+                    {opportunity.transportationAllowance.toLocaleString()} {isAr ? 'ج.م' : 'EGP'}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between pt-1 border-t border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-muted)] font-bold">
+                  {isAr ? 'إجمالي التعويض:' : 'Total Compensation:'}
+                </span>
+                <span className="font-black font-mono text-base text-[var(--theme-primary)]">
+                  {(opportunity.stipend + (opportunity.transportationAllowance || 0)).toLocaleString()} {isAr ? 'ج.م' : 'EGP'}
+                </span>
+              </div>
             </div>
 
             {/* Location */}

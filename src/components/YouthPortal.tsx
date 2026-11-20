@@ -17,6 +17,7 @@ import { ApplyConfirmationSheet } from './youth/ApplyConfirmationSheet';
 import { ParentalConsentSheet } from './youth/ParentalConsentSheet';
 import { ApplicationSentModal } from './youth/ApplicationSentModal';
 import { StipendsScreen } from './youth/StipendsScreen';
+import { CommunityHub } from './youth/CommunityHub';
 import { ProfileScreen } from './youth/ProfileScreen';
 import { SettingsScreen } from './youth/SettingsScreen';
 import { FloatingBottomNav } from './youth/FloatingBottomNav';
@@ -455,6 +456,10 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
 
                   {activeTab === 'stipends' && (
                     <StipendsScreen language={language} isDark={isDark} />
+                  )}
+
+                  {activeTab === 'community' && (
+                    <CommunityHub language={language} isDark={isDark} />
                   )}
 
                   {activeTab === 'profile' && (

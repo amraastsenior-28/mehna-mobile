@@ -1,5 +1,7 @@
 import type { KSAOScores } from '../utils/matchingEngine';
 
+export type EmployerVerificationStatus = 'verified' | 'pending' | 'minor_safe';
+
 export interface WBLOpportunity {
   id: string;
   employerId?: string;
@@ -12,11 +14,33 @@ export interface WBLOpportunity {
   locationAr: string;
   locationEn: string;
   stipend: number; // in EGP
+  transportationAllowance?: number; // in EGP - for rural commute transparency
   durationMonths: number;
   descriptionAr: string;
   descriptionEn: string;
   candidateKSAO: KSAOScores;
   isApplied?: boolean;
+  // Employer verification & safety badges
+  employerVerificationStatus?: EmployerVerificationStatus;
+  isVerifiedWBLPartner?: boolean;
+  isMinorSafeWorkplace?: boolean;
+  /**
+   * Optional short promo video URL for each opportunity.
+   * WHY: A 60-90 second video of the actual training site gives youth a
+   * concrete sense of "what my day looks like" — far more persuasive than
+   * text descriptions for a demographic that grew up on YouTube/TikTok.
+   * We use an optional field so existing opportunities without a video
+   * simply render nothing (no broken placeholders).
+   */
+  promoVideoUrl?: string;
+  /**
+   * What the trainee will concretely master — replaces abstract KSAO scores.
+   * WHY: "88% Knowledge" means nothing to a 17-year-old from Daraw.
+   * "You will wire a 10kW inverter" is a goal they can hold in their mind.
+   * Arabic deliverables are the primary; English provided for bilingual mode.
+   */
+  deliverables?: string[];
+  deliverablesEn?: string[];
 }
 
 export interface StipendEntry {
@@ -54,6 +78,9 @@ export interface EmployerVacancy {
   locationAr: string;
   locationEn: string;
   stipend: number;
+  transportationAllowance?: number;
+  isVerifiedWBLPartner?: boolean;
+  isMinorSafeWorkplace?: boolean;
   applicants: Applicant[];
 }
 
@@ -111,11 +138,28 @@ export const INITIAL_WBL_OPPORTUNITIES: WBLOpportunity[] = [
     locationAr: 'أسوان - مجمع بنبان للطاقة الشمسية',
     locationEn: 'Aswan - Benban Solar Park',
     stipend: 3200,
+    transportationAllowance: 400,
     durationMonths: 6,
     descriptionAr: 'برنامج تدريب عملي ميداني في صيانة ألواح الطاقة الشمسية، ومعايرة محولات العكس ومحطات المراقبة الرقمية.',
     descriptionEn: 'Field-based practical training in solar PV maintenance, inverter calibration, and digital telemetry monitoring.',
     candidateKSAO: { knowledge: 88, practicalSkills: 92, abilities: 84, contextual: 90 },
     isApplied: false,
+    employerVerificationStatus: 'verified',
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
+    promoVideoUrl: 'https://www.youtube-nocookie.com/embed/1la4jGS6k3M',
+    deliverables: [
+      'فحص وقياس كفاءة الألواح الشمسية بمحطات العكس المركزية',
+      'صيانة كابلات الجهد المتوسط وتوصيلات محولات الطاقة',
+      'قراءة بيانات محطة المراقبة الرقمية وتشخيص الأعطال الميدانية',
+      'تطبيق معايير السلامة المهنية والصحة للعمل في المحطات الكبرى',
+    ],
+    deliverablesEn: [
+      'Inspect and measure solar panel efficiency at central inverter stations',
+      'Maintain medium-voltage cabling and power transformer connections',
+      'Read digital telemetry data and diagnose field electrical faults',
+      'Execute standard industrial HSE protocols for utility-scale solar parks',
+    ],
   },
   {
     id: 'wbl-2',
@@ -128,11 +172,28 @@ export const INITIAL_WBL_OPPORTUNITIES: WBLOpportunity[] = [
     locationAr: 'أسوان - وادي النقرة',
     locationEn: 'Aswan - Wadi El-Nokra',
     stipend: 2800,
+    transportationAllowance: 350,
     durationMonths: 4,
     descriptionAr: 'تطبيق عملي على شبكات الري بالتنقيط المؤتمتة، إدارة ملوحة التربة، وحصاد المحاصيل التصديرية.',
     descriptionEn: 'Hands-on instruction in automated drip irrigation grids, soil salinity management, and export crop logistics.',
     candidateKSAO: { knowledge: 75, practicalSkills: 80, abilities: 72, contextual: 78 },
     isApplied: false,
+    employerVerificationStatus: 'verified',
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
+    promoVideoUrl: 'https://www.youtube-nocookie.com/embed/1la4jGS6k3M',
+    deliverables: [
+      'برمجة وصيانة لوحات التحكم الآلي لشبكات الري بالتنقيط',
+      'تحليل ومراقبة ملوحة ورطوبة التربة عبر المستشعرات الحقلية',
+      'تشغيل محطات الضخ وتسميد التربة بالمغذيات العضوية',
+      'تجهيز المحاصيل التصديرية وتطبيق معايير الجودة العالمية',
+    ],
+    deliverablesEn: [
+      'Program and calibrate automated drip irrigation controllers',
+      'Monitor soil salinity and moisture levels using field IoT sensors',
+      'Operate variable pumping stations and organic fertigation systems',
+      'Prepare export-grade harvests according to international GAP standards',
+    ],
   },
   {
     id: 'wbl-3',
@@ -145,11 +206,28 @@ export const INITIAL_WBL_OPPORTUNITIES: WBLOpportunity[] = [
     locationAr: 'أسوان - قرية غرب سهيل',
     locationEn: 'Aswan - Gharb Soheil',
     stipend: 2600,
+    transportationAllowance: 250,
     durationMonths: 6,
     descriptionAr: 'دمج تقنيات التشكيل الفخاري النوبي التقليدي مع أفران الحرق الصديقة للبيئة وأنماط التصميم المعاصرة.',
     descriptionEn: 'Combining traditional Nubian wheel-throwing methods with eco-friendly kilns and contemporary product design.',
     candidateKSAO: { knowledge: 68, practicalSkills: 85, abilities: 80, contextual: 88 },
     isApplied: false,
+    employerVerificationStatus: 'verified',
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
+    promoVideoUrl: 'https://www.youtube-nocookie.com/embed/1la4jGS6k3M',
+    deliverables: [
+      'تشكيل القطع الفخارية النوبية على العجلة بتقنيات متقدمة',
+      'تحضير ومزج الطينات المحلية وإعداد ألوان الطلاء الطبيعية',
+      'تشغيل أفران الحرق الصديقة للبيئة وضبط درجات الحرارة بدقة',
+      'تشطيب وتغليف المنتجات الخزفية التراثية للعرض والتصدير',
+    ],
+    deliverablesEn: [
+      'Master wheel-throwing of authentic Nubian ceramic artifacts',
+      'Formulate local clay blends and extract natural mineral glazes',
+      'Operate eco-friendly kilns and calibrate firing temperature cycles',
+      'Finish and package heritage ceramic products for export markets',
+    ],
   },
   {
     id: 'wbl-4',
@@ -162,11 +240,28 @@ export const INITIAL_WBL_OPPORTUNITIES: WBLOpportunity[] = [
     locationAr: 'أسوان - جزيرة هيسا',
     locationEn: 'Aswan - Heissa Island',
     stipend: 3000,
+    transportationAllowance: 300,
     durationMonths: 5,
     descriptionAr: 'إدارة تجربة النزلاء البيئية، الإشراف على الأغذية العضوية المحلية، وقيادة الجولات البيئية والثقافية.',
     descriptionEn: 'Managing guest eco-experiences, local organic farm-to-table coordination, and sustainable cultural excursions.',
     candidateKSAO: { knowledge: 78, practicalSkills: 76, abilities: 86, contextual: 92 },
     isApplied: false,
+    employerVerificationStatus: 'verified',
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
+    promoVideoUrl: 'https://www.youtube-nocookie.com/embed/1la4jGS6k3M',
+    deliverables: [
+      'استقبال وتنظيم جداول إقامة النزلاء في النزل البيئية',
+      'تصميم وتنفيذ جولات سياحية وثقافية مستدامة بالتعاون مع المجتمع المحلي',
+      'إدارة سلاسل التوريد الغذائي العضوي وتنسيق الضيافة النوبية',
+      'التواصل الاحترافي مع الضيوف بلغات متعددة وحل المواقف الفورية',
+    ],
+    deliverablesEn: [
+      'Manage guest eco-stay itineraries and concierge operations',
+      'Design and lead community-based sustainable cultural tours',
+      'Coordinate local farm-to-table supply chains and Nubian hospitality',
+      'Deliver multilingual guest communications and live tour facilitation',
+    ],
   },
   {
     id: 'wbl-5',
@@ -179,11 +274,28 @@ export const INITIAL_WBL_OPPORTUNITIES: WBLOpportunity[] = [
     locationAr: 'أسوان - مدينة أسوان الجديدة',
     locationEn: 'Aswan - New Aswan City',
     stipend: 2700,
+    transportationAllowance: 200,
     durationMonths: 6,
     descriptionAr: 'التدريب على أنوال النسيج النوبية والمصرية الأصيلة، تقنيات الصباغة الطبيعية المستدامة ومراقبة الجودة.',
     descriptionEn: 'Skill building on authentic hand-looms, natural zero-chemical dye extraction, and export fabric quality testing.',
     candidateKSAO: { knowledge: 72, practicalSkills: 88, abilities: 74, contextual: 82 },
     isApplied: false,
+    employerVerificationStatus: 'pending',
+    isVerifiedWBLPartner: false,
+    isMinorSafeWorkplace: false,
+    promoVideoUrl: 'https://www.youtube-nocookie.com/embed/1la4jGS6k3M',
+    deliverables: [
+      'إعداد وشد خيوط السداء واللحمة على الأنوال اليدوية المطورة',
+      'تنفيذ النقوش والرموز النوبية التراثية بدقة وحرفية عالية',
+      'استخلاص وتجهيز الصبغات النباتية الطبيعية الخالية من المواد الكيميائية',
+      'فحص متانة وجودة الأقمشة المنسوجة وفق متطلبات المعارض الدولية',
+    ],
+    deliverablesEn: [
+      'Warp and set up upgraded traditional hand-looms with precision',
+      'Weave authentic heritage motifs and historic Nubian geometric patterns',
+      'Extract and formulate natural zero-chemical vegetable dyes',
+      'Conduct fabric tensile and quality inspections for exhibition grade textiles',
+    ],
   },
   {
     id: 'wbl-6',
@@ -196,11 +308,28 @@ export const INITIAL_WBL_OPPORTUNITIES: WBLOpportunity[] = [
     locationAr: 'أسوان - مجمع ريادة الأعمال بالجامعة',
     locationEn: 'Aswan - University Entrepreneurship Hub',
     stipend: 3100,
+    transportationAllowance: 300,
     durationMonths: 4,
     descriptionAr: 'تصوير المنتجات الحرفية، إدارة المتاجر الإلكترونية عبر منصات شوبيفاي، وتنفيذ الحملات الإعلانية الموجهة دولياً.',
     descriptionEn: 'Product photography for heritage goods, managing Shopify craft storefronts, and running targeted global export ad campaigns.',
     candidateKSAO: { knowledge: 90, practicalSkills: 86, abilities: 88, contextual: 80 },
     isApplied: false,
+    employerVerificationStatus: 'verified',
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
+    promoVideoUrl: 'https://www.youtube-nocookie.com/embed/1la4jGS6k3M',
+    deliverables: [
+      'تصوير احترافي للمنتجات الحرفية وضبط الإضاءة الترويجية',
+      'إعداد وإدارة صفحات المتاجر الإلكترونية على منصات التجارة الدولية',
+      'إطلاق وتتبع الحملات الإعلانية الممولة على منصات التواصل الاجتماعي',
+      'إدارة خدمة العملاء وتنسيق الشحن الدولي وتغليف الطلبات',
+    ],
+    deliverablesEn: [
+      'Shoot high-definition product photography with studio lighting',
+      'Configure and manage multi-currency craft storefronts on Shopify',
+      'Launch and optimize targeted social media export ad campaigns',
+      'Handle customer support, international shipping fulfillment and tracking',
+    ],
   },
 ];
 
@@ -258,6 +387,9 @@ export const INITIAL_EMPLOYER_VACANCIES: EmployerVacancy[] = [
     locationAr: 'مجمع بنبان - أسوان',
     locationEn: 'Benban Park - Aswan',
     stipend: 3200,
+    transportationAllowance: 400,
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
     applicants: [
       {
         id: 'app-1',
@@ -310,6 +442,9 @@ export const INITIAL_EMPLOYER_VACANCIES: EmployerVacancy[] = [
     locationAr: 'غرب سهيل - أسوان',
     locationEn: 'Gharb Soheil - Aswan',
     stipend: 3000,
+    transportationAllowance: 300,
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
     applicants: [
       {
         id: 'app-4',
@@ -349,6 +484,9 @@ export const INITIAL_EMPLOYER_VACANCIES: EmployerVacancy[] = [
     locationAr: 'مدينة أسوان - المركز التكنولوجي',
     locationEn: 'Aswan City - Tech Hub',
     stipend: 3100,
+    transportationAllowance: 300,
+    isVerifiedWBLPartner: true,
+    isMinorSafeWorkplace: true,
     applicants: [
       {
         id: 'app-6',

@@ -84,6 +84,7 @@ class YouthDatabaseService {
           locationAr: row.location_ar,
           locationEn: row.location_en,
           stipend: row.stipend_egp,
+          transportationAllowance: row.transportation_allowance_egp ?? 0,
           durationMonths: row.duration_months,
           descriptionAr: row.description_ar,
           descriptionEn: row.description_en,
@@ -94,6 +95,12 @@ class YouthDatabaseService {
             contextual: row.ksao_contextual ?? 50,
           },
           isApplied: false,
+          employerVerificationStatus: row.employer_verification_status ?? 'pending',
+          isVerifiedWBLPartner: row.is_verified_wbl_partner ?? false,
+          isMinorSafeWorkplace: row.is_minor_safe_workplace ?? false,
+          promoVideoUrl: row.promo_video_url ?? (INITIAL_WBL_OPPORTUNITIES.find((o) => o.id === row.id)?.promoVideoUrl),
+          deliverables: row.deliverables ?? (INITIAL_WBL_OPPORTUNITIES.find((o) => o.id === row.id)?.deliverables ?? []),
+          deliverablesEn: row.deliverables_en ?? (INITIAL_WBL_OPPORTUNITIES.find((o) => o.id === row.id)?.deliverablesEn ?? []),
         }));
 
         // Cache fresh cloud data locally for future offline sessions

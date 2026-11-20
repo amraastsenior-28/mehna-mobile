@@ -96,10 +96,12 @@ export const StipendsScreen: React.FC<StipendsScreenProps> = ({
             return (
               <div
                 key={stipend.id}
-                className="p-3.5 rounded-2xl border flex items-center justify-between shadow-xs transition-colors"
+                className={`p-3.5 rounded-2xl border flex items-center justify-between shadow-xs transition-colors ${
+                  isProcessing ? 'stipend-alert-processing' : ''
+                }`}
                 style={{
                   backgroundColor: 'var(--theme-surface)',
-                  borderColor: 'var(--theme-border)',
+                  borderColor: isProcessing ? '#C8963E' : 'var(--theme-border)',
                 }}
               >
                 {/* Month & Reference */}
@@ -115,7 +117,7 @@ export const StipendsScreen: React.FC<StipendsScreenProps> = ({
                 {/* Amount & Status Chip (Spec Section 2 Tokens) */}
                 <div className="text-end space-y-1">
                   <div className="flex items-baseline justify-end gap-1 font-mono font-black text-sm text-[var(--theme-text)]">
-                    <span>{stipend.amount.toLocaleString()}</span>
+                    <span className={isProcessing ? 'text-[#C8963E]' : ''}>{stipend.amount.toLocaleString()}</span>
                     <span className="text-[10px] font-sans font-bold text-[var(--theme-text-muted)]">
                       {isAr ? 'ج.م' : 'EGP'}
                     </span>
@@ -126,7 +128,7 @@ export const StipendsScreen: React.FC<StipendsScreenProps> = ({
                       isPaid
                         ? 'bg-emerald-500/15 text-[var(--theme-success)]'
                         : isProcessing
-                        ? 'bg-amber-500/15 text-[var(--theme-warning)]'
+                        ? 'bg-[#C8963E]/20 text-[#C8963E] border border-[#C8963E]/40 font-black'
                         : 'bg-neutral-500/15 text-[var(--theme-text-muted)]'
                     }`}
                   >

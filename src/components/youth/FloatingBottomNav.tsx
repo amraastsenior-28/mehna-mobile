@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Briefcase, Coins, User, Settings } from 'lucide-react';
+import { Briefcase, Coins, User, Settings, Users } from 'lucide-react';
 import type { Language } from '../Navbar';
 
-export type YouthNavTab = 'home' | 'stipends' | 'profile' | 'settings';
+export type YouthNavTab = 'home' | 'stipends' | 'community' | 'profile' | 'settings';
 
 interface FloatingBottomNavProps {
   activeTab: YouthNavTab;
@@ -38,10 +38,11 @@ export const FloatingBottomNav: React.FC<FloatingBottomNavProps> = ({
     labelEn: string;
     icon: React.ComponentType<{ className?: string; strokeWidth?: number; style?: React.CSSProperties }>;
   }[] = useMemo(() => [
-    { id: 'home',     labelAr: 'الفرص',      labelEn: 'Home',     icon: Briefcase },
-    { id: 'stipends', labelAr: 'المكافآت',    labelEn: 'Stipends', icon: Coins },
-    { id: 'profile',  labelAr: 'الملف',       labelEn: 'Profile',  icon: User },
-    { id: 'settings', labelAr: 'الإعدادات',   labelEn: 'Settings', icon: Settings },
+    { id: 'home',      labelAr: 'الفرص',      labelEn: 'Home',      icon: Briefcase },
+    { id: 'stipends',  labelAr: 'المكافآت',    labelEn: 'Stipends',  icon: Coins },
+    { id: 'community', labelAr: 'الملتقى',     labelEn: 'Makers',    icon: Users },
+    { id: 'profile',   labelAr: 'الملف',       labelEn: 'Profile',   icon: User },
+    { id: 'settings',  labelAr: 'الإعدادات',   labelEn: 'Settings',  icon: Settings },
   ], []);
 
   // ── Capsule position tracking ──

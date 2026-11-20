@@ -295,6 +295,165 @@
   }
 }
 
+/*
+  MEHNA Arabic Typography Engine (Entry 014)
+  ─────────────────────────────────────────────────────────────────────────────
+  WHY: Arabic script requires larger glyphs than Latin at equivalent px values.
+  At 14-15px (typical mobile defaults), Arabic becomes illegible outdoors on
+  budget screens. We raise the baseline to 18px for all Arabic-direction content
+  and boost line-height to 1.75 (vs 1.5 for Latin) so descenders don't collide
+  across lines — a common pain point with Cairo's taller baseline.
+  We scope this ONLY to [dir="rtl"] elements (Arabic/RTL contexts) so the Latin
+  UI chrome remains unaffected.
+*/
+[dir="rtl"],
+:lang(ar) {
+  font-size: 18px;
+  line-height: 1.75;
+  letter-spacing: 0;          /* Arabic never uses tracking; reset any inherited value */
+  font-feature-settings: "liga" 1, "calt" 1; /* Enable ligature joining for Cairo */
+}
+
+/* Fine-tune: headings in Arabic need to be proportionally heavier */
+[dir="rtl"] h1, :lang(ar) h1 { font-size: 1.6rem; font-weight: 900; }
+[dir="rtl"] h2, :lang(ar) h2 { font-size: 1.35rem; font-weight: 800; }
+[dir="rtl"] h3, :lang(ar) h3 { font-size: 1.1rem; font-weight: 700; }
+
+/*
+  Copper Stipend Alert Styling (Entry 014)
+  ─────────────────────────────────────────────────────────────────────────────
+  WHY: Stipend "Processing" and "Scheduled" states carry financial stakes for
+  trainees who may be counting on these funds. We use brand copper #C8963E
+  (from the agreed BMC palette) as a "trust signal" colour — warm, intentional,
+  instantly distinguishable from the standard text stream. A left-border accent
+  reinforces the visual hierarchy in an RTL-safe way (using logical 'inset-inline-start').
+*/
+.stipend-alert-processing {
+  color: #C8963E !important;
+  font-weight: 800;
+  border-inline-start: 3px solid #C8963E;
+  padding-inline-start: 8px;
+  border-radius: 0 6px 6px 0;
+}
+
+.stipend-alert-scheduled {
+  color: #9A7230 !important;
+  font-weight: 700;
+  border-inline-start: 3px solid #C8963E80;
+  padding-inline-start: 8px;
+  border-radius: 0 6px 6px 0;
+}
+
+/* Dark mode copper adjustments for WCAG AA contrast */
+.dark .stipend-alert-processing,
+[data-theme="dark"] .stipend-alert-processing {
+  color: #E0B86A !important;
+  border-inline-start-color: #E0B86A;
+}
+
+.dark .stipend-alert-scheduled,
+[data-theme="dark"] .stipend-alert-scheduled {
+  color: #C8A050 !important;
+  border-inline-start-color: #C8A05080;
+}
+
+/*
+  Collapsible Brand Header Animation (Entry 014)
+  ─────────────────────────────────────────────────────────────────────────────
+  WHY: We animate the brand header out of view on scroll-down using a CSS class
+  toggle rather than inline styles. This keeps the transform on the compositor
+  thread (GPU), avoiding layout jank. The 250ms ease-out feels snappy without
+  being jarring — it matches the threshold where "scroll intent" is confirmed.
+*/
+.mehna-brand-header {
+  transition: transform 250ms ease-out, opacity 200ms ease-out;
+  will-change: transform, opacity;
+}
+
+.mehna-brand-header--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none; /* Prevent phantom clicks on hidden header */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mehna-brand-header {
+    transition: none !important;
+  }
+}
+
+/*
+  Filter Tray Slide-Up Animation (Entry 014)
+  ─────────────────────────────────────────────────────────────────────────────
+  WHY: The filter tray pops up from just above the bottom nav. Using a
+  translateY slide (not opacity-only) gives the motion a physical sense of
+  origin — the user understands it came from the bottom of their thumb zone.
+*/
+@keyframes filterTraySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-tray-enter {
+  animation: filterTraySlideUp 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-tray-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/*
+  Video Promo Container (Entry 014)
+  ─────────────────────────────────────────────────────────────────────────────
+  WHY: The 16:9 aspect ratio is enforced via padding-bottom: 56.25% (which is
+  9/16 × 100%). This technique works in all browsers and doesn't require
+  aspect-ratio CSS which is not universally supported in all Capacitor WebView
+  targets. The copper glow is applied as a box-shadow, not a border — this
+  prevents the glow from pushing the layout and maintains the rhythm of the
+  surrounding content.
+*/
+.mehna-video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 0 0 2px rgba(200, 150, 62, 0.4), 0 8px 24px rgba(200, 150, 62, 0.2);
+}
+
+.mehna-video-container iframe,
+.mehna-video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+}
+
+/* Copper glow pulse on hover — reinforces interactivity */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .mehna-video-container:hover {
+    box-shadow: 0 0 0 2px rgba(200, 150, 62, 0.7), 0 12px 32px rgba(200, 150, 62, 0.35);
+    transition: box-shadow 300ms ease;
+  }
+}
+
+/* Utility: hide native scrollbars on filter chip rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 body {
   font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background-color: #F4F0E6;
