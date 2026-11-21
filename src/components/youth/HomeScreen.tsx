@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { WBLOpportunity } from '../../data/mockData';
 import type { Language } from '../Navbar';
-import { Search, MapPin, Building2, Coins, Check, ShieldCheck, Truck, Award, AlertCircle, SlidersHorizontal } from 'lucide-react';
+import { Search, MapPin, Building2, Coins, Check, ShieldCheck, Truck, AlertCircle, SlidersHorizontal } from 'lucide-react';
 import { StaggeredList } from './StaggeredList';
 import { OpportunityListSkeleton } from './ShimmerSkeleton';
 import type { MatchingWeights } from '../../utils/matchingEngine';

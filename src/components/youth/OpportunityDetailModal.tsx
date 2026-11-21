@@ -1,7 +1,7 @@
 import React from 'react';
 import type { WBLOpportunity } from '../../data/mockData';
 import type { Language } from '../Navbar';
-import { X, MapPin, Building2, CheckCircle, ShieldCheck, Calendar, Sparkles, Truck, Award, AlertCircle, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { X, MapPin, Building2, CheckCircle, ShieldCheck, Calendar, Sparkles, Truck, AlertCircle, PlayCircle, CheckCircle2 } from 'lucide-react';
 
 interface OpportunityDetailModalProps {
   opportunity: WBLOpportunity;
