@@ -156,12 +156,6 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                   {isAr ? 'شريك WBL معتمد' : 'Verified WBL Partner'}
                 </span>
               )}
-              {opportunity.isMinorSafeWorkplace && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/30">
-                  <Award className="w-3.5 h-3.5" />
-                  {isAr ? 'مكان عمل آمن للقاصرين' : 'Minor-Safe Workplace'}
-                </span>
-              )}
               {opportunity.employerVerificationStatus === 'pending' && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
                   <AlertCircle className="w-3.5 h-3.5" />
