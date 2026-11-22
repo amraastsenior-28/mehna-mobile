@@ -194,7 +194,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       {/* Main Opportunities Feed */}
-      <div className="flex-1 p-4 space-y-3.5 pb-36">
+      <div className="flex-1 p-4 space-y-3.5 pb-24">
         {/* Feed Header */}
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-[var(--theme-text)]">
@@ -360,7 +360,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </div>
 
       {/* Floating Bottom-Anchored Thumb Filter Tray (Entry 014 - Step 6 Suggestion C) */}
-      <div className="fixed bottom-20 inset-x-0 z-30 flex justify-center pointer-events-none px-3">
+      <div className="fixed bottom-20 inset-x-0 z-30 hidden justify-center pointer-events-none px-3">
         <div
           className="pointer-events-auto shadow-card-hover rounded-2xl border p-1.5 backdrop-blur-md transition-all mehna-glass-bar flex items-center gap-1.5 max-w-sm w-full"
           style={{

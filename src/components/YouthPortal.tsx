@@ -16,7 +16,7 @@ import { OpportunityDetailModal } from './youth/OpportunityDetailModal';
 import { ApplyConfirmationSheet } from './youth/ApplyConfirmationSheet';
 import { ParentalConsentSheet } from './youth/ParentalConsentSheet';
 import { ApplicationSentModal } from './youth/ApplicationSentModal';
-import { StipendsScreen } from './youth/StipendsScreen';
+import { WorkshopLogbook } from './youth/WorkshopLogbook';
 import { CommunityHub } from './youth/CommunityHub';
 import { ProfileScreen } from './youth/ProfileScreen';
 import { SettingsScreen } from './youth/SettingsScreen';
@@ -149,7 +149,7 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
 
   // Handle Tab Switch with Directional Slide
   const handleTabChange = (nextTab: YouthNavTab) => {
-    const tabOrder: YouthNavTab[] = ['home', 'stipends', 'profile', 'settings'];
+    const tabOrder: YouthNavTab[] = ['home', 'logbook', 'community', 'profile', 'settings'];
     const prevIdx = tabOrder.indexOf(activeTab);
     const nextIdx = tabOrder.indexOf(nextTab);
     const directionMultiplier = isAr ? -1 : 1;
@@ -454,8 +454,8 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
                     />
                   )}
 
-                  {activeTab === 'stipends' && (
-                    <StipendsScreen language={language} isDark={isDark} />
+                  {activeTab === 'logbook' && (
+                    <WorkshopLogbook language={language} isDark={isDark} />
                   )}
 
                   {activeTab === 'community' && (
@@ -555,7 +555,7 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
           onClose={() => setShowApplicationSent(false)}
           onViewStipends={() => {
             setShowApplicationSent(false);
-            setActiveTab('stipends');
+            setActiveTab('logbook');
           }}
         />
       )}

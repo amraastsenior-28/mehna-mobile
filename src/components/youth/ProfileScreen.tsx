@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import type { Language } from '../Navbar';
 import type { YouthUserProfile } from './types';
 import { YOUTH_PROFILE_DATA } from '../../data/mockData';
-import { User, MapPin, Award, ShieldCheck, Edit3, Sparkles, BookOpen } from 'lucide-react';
-import { WorkshopLogbook } from './WorkshopLogbook';
+import { User, MapPin, Award, ShieldCheck, Edit3, Sparkles } from 'lucide-react';
 
 interface ProfileScreenProps {
   language: Language;
   user: YouthUserProfile | null;
   isDark?: boolean;
-  onEditProfile: () => void;
+  onEditProfile?: () => void;
 }
 
 /**
@@ -27,10 +26,8 @@ interface ProfileScreenProps {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   language,
   user,
-  onEditProfile,
 }) => {
   const isAr = language === 'ar';
-  const [showLogbook, setShowLogbook] = useState(false);
 
   const candidateName = user?.name || (isAr ? YOUTH_PROFILE_DATA.nameAr : YOUTH_PROFILE_DATA.nameEn);
   const trackName =
@@ -38,41 +35,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const locationName =
     user?.preferredLocation || (isAr ? YOUTH_PROFILE_DATA.locationAr : YOUTH_PROFILE_DATA.locationEn);
 
-  // KSAO Competency Breakdown (Dessler Framework)
-  const ksaoFactors = [
-    {
-      id: 'knowledge',
-      titleAr: 'المعرفة النظرية (Knowledge)',
-      titleEn: 'Theoretical Knowledge (K)',
-      value: YOUTH_PROFILE_DATA.ksao.knowledge,
-      descAr: 'المفاهيم الهندسية، قوانين الدوائر الكهربائية ومعايير الألواح',
-      descEn: 'Engineering concepts, electric circuit principles, and PV panel standards',
-    },
-    {
-      id: 'practicalSkills',
-      titleAr: 'المهارات العملية (Skills)',
-      titleEn: 'Practical Skills (S)',
-      value: YOUTH_PROFILE_DATA.ksao.practicalSkills,
-      descAr: 'التركيب الميكانيكي، التوصيل، فحص العوازل والصيانة الدورية',
-      descEn: 'Mechanical mounting, wiring, insulation testing, and routine maintenance',
-    },
-    {
-      id: 'abilities',
-      titleAr: 'القدرات التحليلية (Abilities)',
-      titleEn: 'Analytical Abilities (A)',
-      value: YOUTH_PROFILE_DATA.ksao.abilities,
-      descAr: 'اكتشاف الأعطال وحل المشكلات الفنية تحت ضغط العمل',
-      descEn: 'Fault detection and technical troubleshooting under active site conditions',
-    },
-    {
-      id: 'contextual',
-      titleAr: 'السياق الميداني (Context)',
-      titleEn: 'Field Context (O)',
-      value: YOUTH_PROFILE_DATA.ksao.contextual,
-      descAr: 'التكيف مع طبيعة مناخ أسوان والالتزام الصارم بقواعد السلامة (HSE)',
-      descEn: 'Adaptation to Aswan site climate and strict HSE safety compliance',
-    },
-  ];
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(candidateName);
+
+  const handleSave = async () => {
+    // Logic to save the new name to database would go here
+    setIsEditing(false);
+    // In a real app, update state/DB
+  };
 
   return (
     <div
@@ -92,48 +62,51 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3.5">
-            {/* Avatar circle */}
             <div className="w-14 h-14 rounded-2xl bg-[var(--theme-primary)] text-white flex items-center justify-center font-black text-xl shadow-md border-2 border-white/20 shrink-0">
               <User className="w-7 h-7 stroke-[2]" />
             </div>
 
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5">
-                <h2 className="font-black text-base text-[var(--theme-text)]">{candidateName}</h2>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="font-black text-base text-[var(--theme-text)] border-b border-[var(--theme-primary)] bg-transparent outline-none"
+                  />
+                ) : (
+                  <h2 className="font-black text-base text-[var(--theme-text)]">{editedName}</h2>
+                )}
                 <ShieldCheck className="w-4 h-4 text-[var(--theme-success)] shrink-0" />
               </div>
               <div className="flex items-center gap-1 text-xs text-[var(--theme-text-muted)]">
                 <MapPin className="w-3.5 h-3.5 text-[var(--theme-accent)]" />
                 <span>{locationName}</span>
               </div>
-              <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-[var(--theme-success)]">
-                {user?.isUnder18
-                  ? user?.parentConsentGiven
-                    ? isAr
-                      ? 'موافقة ولي الأمر معتمدة'
-                      : 'Guardian Consent Verified'
-                    : isAr
-                    ? 'بانتظار موافقة ولي الأمر'
-                    : 'Pending Guardian Consent'
-                  : isAr
-                  ? 'متدرب مستقل معتمد'
-                  : 'Independent Candidate'}
-              </span>
             </div>
           </div>
 
-          <button
-            onClick={onEditProfile}
-            aria-label={isAr ? 'تعديل الملف الشخصي' : 'Edit profile'}
-            className="p-2 rounded-xl border hover:bg-[var(--theme-bg)] transition-colors cursor-pointer"
-            style={{
-              borderColor: 'var(--theme-border)',
-            }}
-          >
-            <Edit3 className="w-4 h-4 text-[var(--theme-accent)]" />
-          </button>
+          {isEditing ? (
+            <button
+              onClick={handleSave}
+              className="text-xs font-bold text-[var(--theme-primary)] cursor-pointer"
+            >
+              {isAr ? 'حفظ' : 'Save'}
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              aria-label={isAr ? 'تعديل الملف الشخصي' : 'Edit profile'}
+              className="p-2 rounded-xl border hover:bg-[var(--theme-bg)] transition-colors cursor-pointer"
+              style={{
+                borderColor: 'var(--theme-border)',
+              }}
+            >
+              <Edit3 className="w-4 h-4 text-[var(--theme-accent)]" />
+            </button>
+          )}
         </div>
-
         {/* Certified VET Pathway badge */}
         <div className="mt-4 pt-3 border-t border-[var(--theme-border)]">
           <span className="text-[10px] uppercase font-bold text-[var(--theme-accent-ink)] block mb-1">
@@ -145,47 +118,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Dual-Learning Logbook Quick Access Banner (Entry 014 - Step 4) */}
-      <div
-        onClick={() => setShowLogbook(true)}
-        className="p-4 rounded-3xl border shadow-card cursor-pointer hover:border-[#C8963E]/40 transition-all flex items-center justify-between group active:scale-[0.99]"
-        style={{
-          backgroundColor: 'var(--theme-surface)',
-          borderColor: 'var(--theme-border)',
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#0D4A38]/10 text-[#0D4A38] dark:bg-white/10 dark:text-emerald-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <BookOpen className="w-5 h-5 text-[#C8963E]" />
-          </div>
-          <div>
-            <h3 className="font-black text-sm text-[var(--theme-text)] group-hover:text-[#C8963E] transition-colors">
-              {isAr ? 'سجل التدريب الميداني المزدوج' : 'Workshop Training Logbook'}
-            </h3>
-            <p className="text-[11px] text-[var(--theme-text-muted)]">
-              {isAr
-                ? '84 ساعة عملية موثقة بتوقيع المشرفين والمعلمين الحرفيين'
-                : '84 verified practical hours signed by master craftsmen'}
-            </p>
-          </div>
-        </div>
-        <span className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#0D4A38] shrink-0 shadow-xs">
-          {isAr ? 'عرض السجل' : 'View'}
-        </span>
-      </div>
-
-      {/* Modal View for Workshop Logbook */}
-      {showLogbook && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-xs">
-          <div className="w-full h-[90vh] rounded-t-3xl overflow-hidden shadow-2xl">
-            <WorkshopLogbook
-              language={language}
-              onClose={() => setShowLogbook(false)}
-            />
-          </div>
-        </div>
-      )}
 
       {/* KSAO Competency 4-Factor Bars (Spec Section 7) */}
       <div
@@ -205,31 +137,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--theme-bg)] text-[var(--theme-accent-ink)]">
             {isAr ? 'تقييم معتمد' : 'Verified'}
           </span>
-        </div>
-
-        {/* 4 Factor Bars */}
-        <div className="space-y-4">
-          {ksaoFactors.map((f) => (
-            <div key={f.id} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[var(--theme-text)]">{isAr ? f.titleAr : f.titleEn}</span>
-                <span className="font-black font-mono text-[var(--theme-accent-ink)]">{f.value}%</span>
-              </div>
-
-              {/* Progress track */}
-              <div className="w-full h-2 rounded-full bg-[var(--theme-bg)] border border-[var(--theme-border)] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${f.value}%`,
-                    backgroundColor: 'var(--theme-primary)',
-                  }}
-                />
-              </div>
-
-              <p className="text-[10px] text-[var(--theme-text-muted)] leading-tight">{isAr ? f.descAr : f.descEn}</p>
-            </div>
-          ))}
         </div>
       </div>
     </div>
