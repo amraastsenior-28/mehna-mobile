@@ -143,19 +143,6 @@ export const CommunityHub: React.FC<CommunityHubProps> = ({ language, isDark: _i
               : 'Collaborative applied projects & graduation hubs for Aswan vocational trainees.'}
           </p>
         </div>
-
-        <button
-          onClick={() => {
-            const waUrl = 'https://wa.me/201012345678?text=' + encodeURIComponent(
-              isAr ? 'مرحباً، أرغب في تسجيل مشروع جديد بملتقى صناع مهنة' : 'Hello, I want to propose a new project on MEHNA Makers Hub'
-            );
-            window.open(waUrl, '_blank');
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#0D4A38] hover:bg-[#093528] transition-colors shadow-xs shrink-0"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>{isAr ? 'اقترح مشروعاً' : 'Propose'}</span>
-        </button>
       </div>
 
       {/* Category Chips */}
