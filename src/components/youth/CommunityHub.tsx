@@ -4,7 +4,6 @@ import {
   Users,
   MessageCircle,
   Send,
-  PlusCircle,
   ExternalLink,
   Wrench,
   Sun,
