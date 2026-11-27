@@ -351,13 +351,14 @@ export const YouthPortal: React.FC<YouthPortalProps> = ({
                 {/* Emblem centered at 40% screen width */}
                 <div className="relative z-10 flex flex-col items-center splash-emblem-in">
                   <img
-                    src={`${import.meta.env.BASE_URL}brand/mehna-emblem.png`}
+                    src={`${import.meta.env.BASE_URL}brand/mehna-emblem.webp`}
                     alt={isAr ? 'شعار مهنة' : 'MEHNA emblem'}
                     className="select-none pointer-events-none"
                     style={{
                       width: 'min(40vw, 180px)',
                       height: 'auto',
-                      aspectRatio: '0.748 / 1',
+                      // True aspect ratio from Canva export: content is 3297×4401 px → 0.75
+                      aspectRatio: '0.75 / 1',
                       objectFit: 'contain',
                     }}
                   />

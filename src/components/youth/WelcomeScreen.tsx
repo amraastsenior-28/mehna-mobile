@@ -86,26 +86,26 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       {/* Center Branding Area */}
       <div className="flex flex-col items-center text-center my-auto py-8">
         {/* 
-          Official MEHNA Emblem:
-          - Rendered at 56px height (within 48-64px spec)
-          - Aspect ratio strictly preserved at 0.73 : 1
-          - Cream (#F4F0E6) surface ensures dark outer band contrast
+          Official MEHNA Emblem (WebP — 93% smaller than PNG, full RGBA alpha):
+          - Rendered at 64px height with auto width, true 0.75:1 aspect from Canva export
+          - Cream (#F4F0E6) surface ensures the green-gold arch stands out on any theme
+          - p-4 padding gives clear-space breathing room around the emblem
         */}
-        <div className="relative mb-5 p-3 rounded-2xl flex items-center justify-center bg-[#F4F0E6] shadow-sm border border-[#E4DBCB]/60">
+        <div className="relative mb-5 p-4 rounded-3xl flex items-center justify-center bg-[#F4F0E6] shadow-sm border border-[#E4DBCB]/60">
           <img
-            src={`${import.meta.env.BASE_URL}brand/mehna-emblem.png`}
+            src={`${import.meta.env.BASE_URL}brand/mehna-emblem.webp`}
             alt="MEHNA Emblem"
-            className="h-14 w-[42px] object-contain select-none pointer-events-none"
-            style={{ aspectRatio: '0.748 / 1' }}
+            className="h-16 w-auto object-contain select-none pointer-events-none"
+            style={{ aspectRatio: '0.75 / 1' }}
           />
         </div>
 
-        {/* Wordmark branding: Pure Gold Calligraphic Text Design */}
+        {/* Gold calligraphic wordmark "مِهْنَة" — Canva clean transparent WebP export */}
         <div className="flex items-center justify-center mb-6">
           <img
-            src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
+            src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.webp`}
             alt="مهنة"
-            className="h-16 w-auto max-w-[240px] object-contain select-none pointer-events-none drop-shadow-sm"
+            className="h-14 w-auto max-w-[260px] object-contain select-none pointer-events-none drop-shadow-sm"
           />
         </div>
 

@@ -119,7 +119,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <div className="flex items-center justify-between pb-1">
             <div className="flex items-center gap-2.5">
               <img
-                src={`${import.meta.env.BASE_URL}brand/mehna-emblem.png`}
+                src={`${import.meta.env.BASE_URL}brand/mehna-emblem.webp`}
                 alt="MEHNA Emblem"
                 className="w-8 h-8 rounded-xl object-contain border border-[var(--theme-border)] bg-[var(--theme-surface)] shadow-xs"
                 onError={(e) => {
@@ -130,7 +130,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <div className="flex items-center gap-1.5">
                   {isAr ? (
                     <img
-                      src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
+                      src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.webp`}
                       alt="مهنة"
                       className="h-5 w-auto object-contain"
                     />
