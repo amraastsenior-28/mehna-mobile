@@ -119,7 +119,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <div className="flex items-center justify-between pb-1">
             <div className="flex items-center gap-2.5">
               <img
-                src={`${import.meta.env.BASE_URL}emblem-demo-512.png`}
+                src={`${import.meta.env.BASE_URL}brand/mehna-emblem.png`}
                 alt="MEHNA Emblem"
                 className="w-8 h-8 rounded-xl object-contain border border-[var(--theme-border)] bg-[var(--theme-surface)] shadow-xs"
                 onError={(e) => {
@@ -128,9 +128,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-brand font-black text-lg tracking-wider text-[var(--theme-primary)] dark:text-[var(--theme-accent)]">
-                    {isAr ? 'مِـهْـنَـة' : 'MEHNA'}
-                  </span>
+                  {isAr ? (
+                    <img
+                      src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
+                      alt="مهنة"
+                      className="h-5 w-auto object-contain"
+                    />
+                  ) : (
+                    <span className="font-brand font-black text-lg tracking-wider text-[var(--theme-primary)] dark:text-[var(--theme-accent)]">
+                      MEHNA
+                    </span>
+                  )}
                   <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-[var(--theme-accent)]/15 text-[var(--theme-accent-ink)] border border-[var(--theme-accent)]/20">
                     {isAr ? 'أسوان' : 'Aswan'}
                   </span>

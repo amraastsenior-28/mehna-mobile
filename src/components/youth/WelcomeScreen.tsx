@@ -91,19 +91,29 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           - Aspect ratio strictly preserved at 0.73 : 1
           - Cream (#F4F0E6) surface ensures dark outer band contrast
         */}
-        <div className="relative mb-6 p-3 rounded-2xl flex items-center justify-center bg-[#F4F0E6] shadow-sm border border-[#E4DBCB]/60">
+        <div className="relative mb-5 p-3 rounded-2xl flex items-center justify-center bg-[#F4F0E6] shadow-sm border border-[#E4DBCB]/60">
           <img
-            src={`${import.meta.env.BASE_URL}emblem-demo-192.png`}
+            src={`${import.meta.env.BASE_URL}brand/mehna-emblem.png`}
             alt="MEHNA Emblem"
-            className="h-14 w-[41px] object-contain select-none pointer-events-none"
-            style={{ aspectRatio: '0.73 / 1' }}
+            className="h-14 w-[42px] object-contain select-none pointer-events-none"
+            style={{ aspectRatio: '0.748 / 1' }}
           />
         </div>
 
-        {/* Wordmark typography */}
-        <h1 className="text-3xl font-black tracking-tight mb-2 font-arabic" style={{ color: 'var(--theme-primary)' }}>
-          {isAr ? 'مِـهْـنَـة' : 'MEHNA'}
-        </h1>
+        {/* Wordmark branding: Custom Calligraphic 3D Gold with Tashkeel for Arabic */}
+        <div className="flex items-center justify-center mb-2">
+          {isAr ? (
+            <img
+              src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
+              alt="مهنة"
+              className="h-14 w-auto max-w-[220px] object-contain select-none pointer-events-none drop-shadow-sm"
+            />
+          ) : (
+            <h1 className="text-3xl font-black tracking-tight font-arabic" style={{ color: 'var(--theme-primary)' }}>
+              MEHNA
+            </h1>
+          )}
+        </div>
         <span className="text-[11px] font-bold tracking-[0.25em] text-[var(--theme-accent)] uppercase mb-5 font-sans">
           ASWAN DUAL VET ALLIANCE
         </span>
