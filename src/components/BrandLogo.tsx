@@ -25,17 +25,13 @@ export const BrandLogo: React.FC<LogoProps> = ({ className = '', showWordmark = 
       </div>
 
       {showWordmark && (
-        <div className="flex flex-col text-start justify-center">
-          {/* Arabic wordmark element */}
+        <div className="flex items-center justify-center">
+          {/* Pure gold Arabic wordmark element */}
           <img
             src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
             alt="مهنة"
-            className="h-7 w-auto object-contain select-none pointer-events-none"
+            className="h-8 w-auto object-contain select-none pointer-events-none"
           />
-          {/* Latin wordmark element: beneath Arabic at 8% height gap, widely spaced serif capitals */}
-          <span className="text-[10px] font-bold tracking-[0.28em] text-[var(--theme-accent)] font-brand uppercase mt-0.5">
-            M E H N A
-          </span>
         </div>
       )}
     </div>

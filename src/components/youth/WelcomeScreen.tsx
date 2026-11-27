@@ -100,23 +100,14 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           />
         </div>
 
-        {/* Wordmark branding: Custom Calligraphic 3D Gold with Tashkeel for Arabic */}
-        <div className="flex items-center justify-center mb-2">
-          {isAr ? (
-            <img
-              src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
-              alt="مهنة"
-              className="h-14 w-auto max-w-[220px] object-contain select-none pointer-events-none drop-shadow-sm"
-            />
-          ) : (
-            <h1 className="text-3xl font-black tracking-tight font-arabic" style={{ color: 'var(--theme-primary)' }}>
-              MEHNA
-            </h1>
-          )}
+        {/* Wordmark branding: Pure Gold Calligraphic Text Design */}
+        <div className="flex items-center justify-center mb-6">
+          <img
+            src={`${import.meta.env.BASE_URL}brand/mehna-wordmark-gold.png`}
+            alt="مهنة"
+            className="h-16 w-auto max-w-[240px] object-contain select-none pointer-events-none drop-shadow-sm"
+          />
         </div>
-        <span className="text-[11px] font-bold tracking-[0.25em] text-[var(--theme-accent)] uppercase mb-5 font-sans">
-          ASWAN DUAL VET ALLIANCE
-        </span>
 
         {/* Value Proposition */}
         <p className="text-lg font-bold leading-relaxed max-w-xs mb-3 text-[var(--theme-text)]">
